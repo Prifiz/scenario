@@ -1,6 +1,6 @@
 package org.myhomeapps.adapters;
 
-import org.myhomeapps.MenuFrame;
+import org.myhomeapps.menumodel.MenuFrame;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -15,7 +15,7 @@ public class CommandLineAdapter implements Observer {
         //System.out.println("CHANGED!");
         MenuFrame currentFrame = (MenuFrame) o;
 
-        String bindField = currentFrame.getBindField();
+        String bindField = currentFrame.getField();
         if(bindField != null && !bindField.isEmpty()) {
             for(Field field : this.getClass().getDeclaredFields()) {
                 if(field.getName().equals(bindField)) {
@@ -29,7 +29,7 @@ public class CommandLineAdapter implements Observer {
             }
         }
 
-        String bindMethod = currentFrame.getBindMethod();
+        String bindMethod = currentFrame.getMethod();
         if(bindMethod != null && !bindMethod.isEmpty()) {
             for(Method method : this.getClass().getDeclaredMethods()) {
                 if(method.getName().equals(bindMethod)) {

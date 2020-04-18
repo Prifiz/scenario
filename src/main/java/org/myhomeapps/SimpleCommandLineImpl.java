@@ -1,5 +1,8 @@
 package org.myhomeapps;
 
+import org.myhomeapps.menumodel.MenuFrame;
+import org.myhomeapps.menumodel.MenuItem;
+import org.myhomeapps.menumodel.NoItem;
 import org.myhomeapps.printers.FormattedMenuPrinter;
 
 import java.io.IOException;
@@ -11,7 +14,7 @@ public class SimpleCommandLineImpl extends Observable implements CommandLine {
 
     private MenuWalker walker;
 
-    public SimpleCommandLineImpl() {
+    public SimpleCommandLineImpl() throws IOException {
         // init walker, etc.
         walker = new SimpleMenuWalker();
     }
@@ -63,7 +66,7 @@ public class SimpleCommandLineImpl extends Observable implements CommandLine {
 
     private void processMenuLevelGoto(MenuFrame currentFrame) {
         for(MenuFrame frame: walker.getAllFrames()) {
-            if(currentFrame.getGotoMenuName().equalsIgnoreCase(frame.getName())) {
+            if(currentFrame.getGotoMenu().equalsIgnoreCase(frame.getName())) {
                 walker.setCurrentFrame(frame);
                 printCurrentFrame();
             }
@@ -72,7 +75,7 @@ public class SimpleCommandLineImpl extends Observable implements CommandLine {
 
     private void processItemLevelGoto(MenuItem menuItem) {
         for(MenuFrame frame: walker.getAllFrames()) {
-            if(menuItem.getGotoMenuName().equalsIgnoreCase(frame.getName())) {
+            if(menuItem.getGotoMenu().equalsIgnoreCase(frame.getName())) {
                 walker.setCurrentFrame(frame);
                 printCurrentFrame();
             }
@@ -84,13 +87,13 @@ public class SimpleCommandLineImpl extends Observable implements CommandLine {
     }
 
     private MenuItem getSelectedItem(MenuFrame frame, String userInput) throws IOException {
-        for(MenuItem menuItem : frame.getMenuItems()) {
+        if(frame.getItems() == null || frame.getItems().isEmpty()) {
+            return new NoItem();
+        }
+        for(MenuItem menuItem : frame.getItems()) {
             if(userInput.equalsIgnoreCase(menuItem.getText())) {
                 return menuItem;
             }
-        }
-        if(frame.getMenuItems().isEmpty()) {
-            return new NoItem();
         }
         throw new IOException("Incorrect input, no item chosen!");
     }
@@ -99,18 +102,18 @@ public class SimpleCommandLineImpl extends Observable implements CommandLine {
         if(isItemLevelGotosDefined(frame)) {
             return GotoLevel.ITEM;
         }
-        if(frame.getGotoMenuName() != null && !frame.getGotoMenuName().isEmpty()) {
+        if(frame.getGotoMenu() != null && !frame.getGotoMenu().isEmpty()) {
             return GotoLevel.MENU;
         }
         throw new IOException("Goto not defined neither on item nor on menu level");
     }
 
     private boolean isItemLevelGotosDefined(MenuFrame frame) {
-        if(frame.getMenuItems().isEmpty()) {
+        if(frame.getItems() == null || frame.getItems().isEmpty()) {
             return false;
         }
-        for(MenuItem item : frame.getMenuItems()) {
-            if(item.getGotoMenuName() == null || item.getGotoMenuName().isEmpty()) {
+        for(MenuItem item : frame.getItems()) {
+            if(item.getGotoMenu() == null || item.getGotoMenu().isEmpty()) {
                 return false;
             }
         }

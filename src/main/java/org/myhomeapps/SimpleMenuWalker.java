@@ -1,5 +1,10 @@
 package org.myhomeapps;
 
+import org.myhomeapps.config.ConfigParser;
+import org.myhomeapps.config.SimpleYamlParser;
+import org.myhomeapps.menumodel.MenuFrame;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,18 +14,9 @@ public class SimpleMenuWalker implements MenuWalker {
 
     private int currentFrameIdx = 0;
 
-    public SimpleMenuWalker() {
-        MenuFrame homeFrame = new MenuFrame(1, "text", "Choose action:", "");
-        homeFrame.addItem(new MenuItem(1, "add", "Add", "first"));
-        homeFrame.addItem(new MenuItem(2, "exit", "Exit", "1"));
-        frames.add(homeFrame);
-        MenuFrame firstValueFrame = new MenuFrame(1, "first", "Enter first value:", "second");
-        firstValueFrame.setBindField("addFirst");
-        frames.add(firstValueFrame);
-        MenuFrame secondValueFrame = new MenuFrame(1, "second", "Enter second value:", "");
-        secondValueFrame.setBindField("addSecond");
-        secondValueFrame.setBindMethod("add");
-        frames.add(secondValueFrame);
+    public SimpleMenuWalker() throws IOException {
+        ConfigParser parser = new SimpleYamlParser("menuSystem.yaml");
+        frames.addAll(parser.parseMenuSystem().getMenuSystem());
     }
 
     @Override

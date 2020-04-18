@@ -1,4 +1,4 @@
-package org.myhomeapps;
+package org.myhomeapps.menumodel;
 
 public class MenuSettings {
 

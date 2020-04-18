@@ -1,5 +1,7 @@
 package org.myhomeapps;
 
+import org.myhomeapps.menumodel.MenuFrame;
+
 import java.util.List;
 
 public interface CommandLine {

@@ -1,6 +1,6 @@
 package org.myhomeapps.printers;
 
-import org.myhomeapps.MenuFrame;
+import org.myhomeapps.menumodel.MenuFrame;
 
 import java.io.PrintStream;
 
