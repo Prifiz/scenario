@@ -1,4 +1,4 @@
-package org.myhomeapps.menumodel;
+package org.myhomeapps.menuentities;
 
 import java.util.List;
 

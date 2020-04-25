@@ -1,4 +1,4 @@
-package org.myhomeapps.menumodel;
+package org.myhomeapps.menuentities;
 
 public class NoItem extends MenuItem {
     public NoItem() {

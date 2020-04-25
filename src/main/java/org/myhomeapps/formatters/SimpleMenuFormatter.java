@@ -1,13 +1,13 @@
-package org.myhomeapps;
+package org.myhomeapps.formatters;
 
-import org.myhomeapps.menumodel.MenuFrame;
-import org.myhomeapps.menumodel.MenuItem;
+import org.myhomeapps.menuentities.MenuFrame;
+import org.myhomeapps.menuentities.MenuItem;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class SimpleTextFormatter implements TextFormatter {
+public class SimpleMenuFormatter implements MenuFormatter {
     public String format(MenuFrame frame) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(frame.getText());

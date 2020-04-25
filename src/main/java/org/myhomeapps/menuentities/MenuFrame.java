@@ -1,4 +1,4 @@
-package org.myhomeapps.menumodel;
+package org.myhomeapps.menuentities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,11 +10,14 @@ public class MenuFrame extends Observable {
     private int id;
     private String name;
     private String text;
-    private String gotoMenu;
+    private String gotoMenu; // always only one!!!
     private String userInput;
     private String method;
     private String field;
     private List<MenuItem> items;
+    boolean home = false;
+    private boolean inputExpected = true;
+
 
     public MenuFrame(int id, String name, String text, String gotoMenu) {
         this.id = id;
@@ -48,22 +51,22 @@ public class MenuFrame extends Observable {
         notifyObservers();
     }
 
+    public boolean hasItems() {
+        return items != null && !items.isEmpty();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MenuFrame menuFrame = (MenuFrame) o;
-        return id == menuFrame.id &&
-                Objects.equals(name, menuFrame.name) &&
-                Objects.equals(text, menuFrame.text) &&
-                Objects.equals(userInput, menuFrame.userInput) &&
-                Objects.equals(method, menuFrame.method) &&
-                Objects.equals(items, menuFrame.items);
+        return
+                Objects.equals(name, menuFrame.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, text, userInput, method, items);
+        return Objects.hash(name);
     }
 
     public int getId() {
@@ -126,17 +129,38 @@ public class MenuFrame extends Observable {
         this.items = items;
     }
 
+    public boolean isHome() {
+        return home;
+    }
+
+    public void setHome(boolean home) {
+        this.home = home;
+    }
+
+    public void setInputExpected(boolean inputExpected) {
+        this.inputExpected = inputExpected;
+    }
+
+    //    @Override
+//    public String toString() {
+//        return "MenuFrame{" +
+//                "id=" + id +
+//                ", name='" + name + '\'' +
+//                ", text='" + text + '\'' +
+//                ", gotoMenu='" + gotoMenu + '\'' +
+//                ", userInput='" + userInput + '\'' +
+//                ", method='" + method + '\'' +
+//                ", field='" + field + '\'' +
+//                ", menuItems=" + items +
+//                '}';
+//    }
+
     @Override
     public String toString() {
-        return "MenuFrame{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", text='" + text + '\'' +
-                ", gotoMenu='" + gotoMenu + '\'' +
-                ", userInput='" + userInput + '\'' +
-                ", method='" + method + '\'' +
-                ", field='" + field + '\'' +
-                ", menuItems=" + items +
-                '}';
+        return name;
+    }
+
+    public boolean isInputExpected() {
+        return inputExpected;
     }
 }

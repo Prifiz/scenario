@@ -1,4 +1,4 @@
-package org.myhomeapps.menumodel;
+package org.myhomeapps.menuentities;
 
 public class MenuItem {
 
@@ -49,13 +49,18 @@ public class MenuItem {
         this.gotoMenu = gotoMenu;
     }
 
+//    @Override
+//    public String toString() {
+//        return "MenuItem{" +
+//                "id=" + id +
+//                ", name='" + name + '\'' +
+//                ", text='" + text + '\'' +
+//                ", gotoMenu='" + gotoMenu + '\'' +
+//                '}';
+//    }
+
     @Override
     public String toString() {
-        return "MenuItem{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", text='" + text + '\'' +
-                ", gotoMenu='" + gotoMenu + '\'' +
-                '}';
+        return name;
     }
 }

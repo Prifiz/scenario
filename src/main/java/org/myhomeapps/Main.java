@@ -1,24 +1,17 @@
 package org.myhomeapps;
 
 import org.myhomeapps.adapters.CalcAdapter;
+import org.myhomeapps.walkers.GraphBasedMenuWalker;
+import org.myhomeapps.walkers.MenuWalker;
 
 import java.io.IOException;
 
 public class Main  {
 
-    public static void main(String[] args) {
-
-        CommandLine commandLine;
-        try {
-            commandLine = new SimpleCommandLineImpl();
-            CalcAdapter calcAdapter = new CalcAdapter();
-            commandLine.getAllFrames().forEach(frame -> frame.addObserver(calcAdapter));
-            commandLine.run();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
+    public static void main(String[] args) throws IOException {
+        MenuWalker walker = new GraphBasedMenuWalker();
+        walker.registerAdapter(new CalcAdapter());
+        walker.run();
     }
 
 }

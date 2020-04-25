@@ -1,8 +1,8 @@
 package org.myhomeapps.config;
 
-import org.myhomeapps.menumodel.MenuItem;
-import org.myhomeapps.menumodel.MenuSettings;
-import org.myhomeapps.menumodel.MenuSystem;
+import org.myhomeapps.menuentities.MenuItem;
+import org.myhomeapps.menuentities.MenuSettings;
+import org.myhomeapps.menuentities.MenuSystem;
 
 import java.io.FileNotFoundException;
 import java.util.List;

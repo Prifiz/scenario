@@ -1,6 +1,6 @@
 package org.myhomeapps.adapters;
 
-import org.myhomeapps.menumodel.MenuFrame;
+import org.myhomeapps.menuentities.MenuFrame;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

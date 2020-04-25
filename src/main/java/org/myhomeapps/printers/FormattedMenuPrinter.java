@@ -1,16 +1,16 @@
 package org.myhomeapps.printers;
 
-import org.myhomeapps.SimpleTextFormatter;
-import org.myhomeapps.menumodel.MenuFrame;
+import org.myhomeapps.formatters.SimpleMenuFormatter;
+import org.myhomeapps.menuentities.MenuFrame;
 
 import java.io.PrintStream;
 
 public class FormattedMenuPrinter implements MenuPrinter {
 
-    private final SimpleTextFormatter formatter;
+    private final SimpleMenuFormatter formatter;
     private final PrintStream out;
 
-    public FormattedMenuPrinter(SimpleTextFormatter formatter, PrintStream out) {
+    public FormattedMenuPrinter(SimpleMenuFormatter formatter, PrintStream out) {
         this.formatter = formatter;
         this.out = out;
     }
