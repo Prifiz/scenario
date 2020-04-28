@@ -59,6 +59,8 @@ public class SimpleYamlParser implements ConfigParser {
     @Override
     public MenuSystem parseMenuSystem() throws FileNotFoundException {
         return new Yaml().loadAs(new InputStreamReader(new FileInputStream(config)), MenuSystem.class);
+        // FIXME check for null elements
+        // two items/frames with the same names
         //menuSystem.getMenuSystem().forEach(System.out::println);
     }
 

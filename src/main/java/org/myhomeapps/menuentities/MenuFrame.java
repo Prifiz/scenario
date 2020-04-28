@@ -1,9 +1,7 @@
 package org.myhomeapps.menuentities;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Observable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MenuFrame extends Observable {
 
@@ -52,7 +50,16 @@ public class MenuFrame extends Observable {
     }
 
     public boolean hasItems() {
-        return items != null && !items.isEmpty();
+        return !(items == null || items.isEmpty());
+    }
+
+    public Collection<MenuItem> findDuplicates() {
+        Set<MenuItem> uniques = new HashSet<>();
+        return Optional.ofNullable(items)
+                .orElse(new ArrayList<>())
+                .stream()
+                .filter(e -> !uniques.add(e))
+                .collect(Collectors.toSet());
     }
 
     @Override

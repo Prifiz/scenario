@@ -1,5 +1,6 @@
 package org.myhomeapps.walkers;
 
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.GraphIterator;
@@ -24,6 +25,21 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         ConfigParser parser = new SimpleYamlParser("menuSystem.yaml");
         menuSystem = parser.parseMenuSystem();
         menuGraph = (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder().buildFramesGraph(menuSystem);
+
+
+        GraphValidator<MenuFrame, DefaultEdge> validator = new DefaultGraphValidator();
+        try {
+            validator.validate(menuGraph);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+            validator.getIssues().forEach((key, value) -> {
+                System.out.println(key);
+                value.forEach(issue -> {
+                    System.out.println("\t" + issue);
+                });
+            });
+            System.exit(0);
+        }
     }
 
     @Override

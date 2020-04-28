@@ -15,11 +15,13 @@ public class DefaultGraphBuilder implements GraphBuilder {
     @Override
     public Graph<MenuFrame, DefaultEdge> buildFramesGraph(MenuSystem menuSystem) {
         DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
-        menuSystem.getMenuSystem().forEach(menuGraph::addVertex);
+        menuSystem.getMenuSystem().forEach(menuFrame -> {
+            menuGraph.addVertex(menuFrame);
+        });
 
         menuGraph.vertexSet().forEach(sourceCandidate -> {
             try {
-                GotoLevel gotoLevel = defineGotoLevel(sourceCandidate);
+                GotoLevelFactory.GotoLevel gotoLevel = new GotoLevelFactory(sourceCandidate).getLevel();
 
                 switch (gotoLevel) {
                     case ITEM: {
@@ -56,37 +58,11 @@ public class DefaultGraphBuilder implements GraphBuilder {
         return menuGraph;
     }
 
-    private enum GotoLevel {
-        MENU, ITEM
-    }
-
-    private GotoLevel defineGotoLevel(MenuFrame frame) throws IOException {
-        if(isItemLevelGotosDefined(frame)) {
-            return GotoLevel.ITEM;
-        }
-        if(frame.getGotoMenu() != null && !frame.getGotoMenu().isEmpty()) {
-            return GotoLevel.MENU;
-        }
-        throw new IOException("Goto not defined neither on item nor on menu level of frame: [" + frame.getName() + "]");
-    }
-
-    private boolean isItemLevelGotosDefined(MenuFrame frame) {
-        if(frame.getItems() == null || frame.getItems().isEmpty()) {
-            return false;
-        }
-        for(MenuItem item : frame.getItems()) {
-            if(item.getGotoMenu() == null || item.getGotoMenu().isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     @Override
     public Graph<MenuItem, DefaultEdge> buildItemsGraph(MenuSystem menuSystem) {
         DefaultDirectedGraph<MenuItem, DefaultEdge> itemsGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
         menuSystem.getMenuSystem().forEach(menuFrame -> {
-            if(menuFrame.hasItems()) {
+            if (menuFrame.hasItems()) {
                 menuFrame.getItems().forEach(itemsGraph::addVertex);
             } else {
                 itemsGraph.addVertex(new ServiceItem(menuFrame.getName(), menuFrame.getGotoMenu()));
@@ -97,7 +73,7 @@ public class DefaultGraphBuilder implements GraphBuilder {
         itemsGraph.vertexSet().forEach(sourceCandidate -> {
             String itemGotoMenu = sourceCandidate.getGotoMenu();
             itemsGraph.vertexSet().forEach(targetCandidate -> {
-                if(targetCandidate.getName().equals(itemGotoMenu)) {
+                if (targetCandidate.getName().equals(itemGotoMenu)) {
                     itemsGraph.addEdge(sourceCandidate, targetCandidate);
                 }
             });
