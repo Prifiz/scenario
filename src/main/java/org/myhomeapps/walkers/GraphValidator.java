@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface GraphValidator<V extends MenuFrame, E> {
-    void validate(Graph<V, E> graph) throws IOException;
-    Map<String, List<String>> getIssues(); // change to collection of issue objects
+    Collection<GraphIssue> validate(Graph<V, E> graph);
+
 }

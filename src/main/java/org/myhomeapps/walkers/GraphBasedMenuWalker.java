@@ -1,6 +1,5 @@
 package org.myhomeapps.walkers;
 
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.GraphIterator;
@@ -13,6 +12,8 @@ import org.myhomeapps.menuentities.MenuSystem;
 import org.myhomeapps.printers.FormattedMenuPrinter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Scanner;
 
@@ -26,25 +27,29 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         menuSystem = parser.parseMenuSystem();
         menuGraph = (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder().buildFramesGraph(menuSystem);
 
+        List<GraphValidator<MenuFrame, DefaultEdge>> validators = new ArrayList<>();
+        validators.add(new DuplicatesFinderValidator());
+        // ...
 
-        GraphValidator<MenuFrame, DefaultEdge> validator = new DefaultGraphValidator();
-        try {
-            validator.validate(menuGraph);
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-            validator.getIssues().forEach((key, value) -> {
-                System.out.println(key);
-                value.forEach(issue -> {
-                    System.out.println("\t" + issue);
-                });
-            });
+        List<GraphIssue> issues = new ArrayList<>();
+        validators.forEach(currentValidator -> issues.addAll(currentValidator.validate(menuGraph)));
+
+
+        issues.forEach(graphIssue -> {
+            System.out.println(graphIssue.getName());
+            graphIssue.getOccurrences().forEach(System.out::println);
+        });
+
+        if (!issues.isEmpty()) {
             System.exit(0);
         }
+
     }
 
     @Override
     public void run() {
-        GraphIterator<MenuFrame, DefaultEdge> it = new PredefinedMenuOrderIterator<>(menuGraph, menuSystem.getHomeFrame());
+        GraphIterator<MenuFrame, DefaultEdge> it = new PredefinedMenuOrderIterator<>(
+                menuGraph, menuSystem.getHomeFrame());
         while (it.hasNext()) {
             MenuFrame currentMenu = it.next();
             new FormattedMenuPrinter(new SimpleMenuFormatter(), System.out).print(currentMenu);
