@@ -7,28 +7,30 @@ import org.myhomeapps.adapters.CommandLineAdapter;
 import org.myhomeapps.config.ConfigParser;
 import org.myhomeapps.config.SimpleYamlParser;
 import org.myhomeapps.formatters.SimpleMenuFormatter;
-import org.myhomeapps.menuentities.MenuFrame;
-import org.myhomeapps.menuentities.MenuSystem;
+import org.myhomeapps.menuentities.*;
 import org.myhomeapps.printers.FormattedMenuPrinter;
+import org.myhomeapps.walkers.validators.DeadEndsFinderValidator;
+import org.myhomeapps.walkers.validators.GraphValidator;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Scanner;
+import java.util.*;
 
 public final class GraphBasedMenuWalker extends Observable implements MenuWalker {
 
     private final MenuSystem menuSystem;
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
+    private Set<Macro> macros = new HashSet<>();
 
     public GraphBasedMenuWalker() throws IOException {
         ConfigParser parser = new SimpleYamlParser("menuSystem.yaml");
-        menuSystem = parser.parseMenuSystem();
+        MacrosParser macrosParser = new DefaultMacrosParser(); // will be used in validations
+
+        menuSystem = parser.parseMenuSystem(macrosParser);
         menuGraph = (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder().buildFramesGraph(menuSystem);
 
         List<GraphValidator<MenuFrame, DefaultEdge>> validators = new ArrayList<>();
-        validators.add(new DuplicatesFinderValidator());
+        validators.add(new DeadEndsFinderValidator());
+        //validators.add(new DuplicatesFinderValidator());
         // ...
 
         List<GraphIssue> issues = new ArrayList<>();
@@ -41,19 +43,24 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         });
 
         if (!issues.isEmpty()) {
-            System.exit(0);
+            System.exit(0);// FIXME not so hardcore exit needed here
         }
-
     }
+
+
 
     @Override
     public void run() {
-        GraphIterator<MenuFrame, DefaultEdge> it = new PredefinedMenuOrderIterator<>(
-                menuGraph, menuSystem.getHomeFrame());
+        MacrosParser macrosParser = new DefaultMacrosParser();
+        MenuFrame homeFrame = menuSystem.getHomeFrame(macrosParser);
+        GraphIterator<MenuFrame, DefaultEdge> it = new PredefinedMenuOrderIterator<>(menuGraph, homeFrame);
         while (it.hasNext()) {
             MenuFrame currentMenu = it.next();
             new FormattedMenuPrinter(new SimpleMenuFormatter(), System.out).print(currentMenu);
-            if(currentMenu.isInputExpected()) {
+
+            Macros macros = macrosParser.parseMacros(currentMenu.getProperties());
+
+            if(macros.isInputExpected()) {
                 currentMenu.setUserInput(new Scanner(System.in).nextLine());
             }
         }
@@ -63,5 +70,13 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
     public void registerAdapter(CommandLineAdapter adapter) {
         menuGraph.vertexSet().forEach(frame -> frame.addObserver(adapter));
     }
+
+    @Override
+    public void registerCustomMacro(Macro customMacro) { // FIXME how will it work for user??? Behavior??!!
+        // Can be used in custom validations!!!
+        macros.add(customMacro);
+    }
+
+    // TODO custom input control
 
 }

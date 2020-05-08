@@ -12,8 +12,8 @@ public class MenuFrame extends Observable {
     private String userInput;
     private String method;
     private String field;
+    private List<String> properties;
     private List<MenuItem> items;
-    boolean home = false;
     private boolean inputExpected = true;
 
 
@@ -136,14 +136,6 @@ public class MenuFrame extends Observable {
         this.items = items;
     }
 
-    public boolean isHome() {
-        return home;
-    }
-
-    public void setHome(boolean home) {
-        this.home = home;
-    }
-
     public void setInputExpected(boolean inputExpected) {
         this.inputExpected = inputExpected;
     }
@@ -169,5 +161,13 @@ public class MenuFrame extends Observable {
 
     public boolean isInputExpected() {
         return inputExpected;
+    }
+
+    public List<String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(List<String> properties) {
+        this.properties = properties;
     }
 }

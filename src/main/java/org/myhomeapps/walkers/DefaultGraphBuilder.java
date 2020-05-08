@@ -15,9 +15,7 @@ public class DefaultGraphBuilder implements GraphBuilder {
     @Override
     public Graph<MenuFrame, DefaultEdge> buildFramesGraph(MenuSystem menuSystem) {
         DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
-        menuSystem.getMenuSystem().forEach(menuFrame -> {
-            menuGraph.addVertex(menuFrame);
-        });
+        menuSystem.getMenuSystem().forEach(menuGraph::addVertex);
 
         menuGraph.vertexSet().forEach(sourceCandidate -> {
             try {

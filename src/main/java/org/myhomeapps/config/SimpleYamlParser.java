@@ -1,5 +1,10 @@
 package org.myhomeapps.config;
 
+import com.github.sbaudoin.yamllint.Linter;
+import com.github.sbaudoin.yamllint.YamlLintConfig;
+import com.github.sbaudoin.yamllint.YamlLintConfigException;
+import org.apache.commons.io.IOUtils;
+import org.myhomeapps.menuentities.MacrosParser;
 import org.myhomeapps.menuentities.MenuItem;
 import org.myhomeapps.menuentities.MenuSettings;
 import org.myhomeapps.menuentities.MenuSystem;
@@ -14,6 +19,11 @@ public class SimpleYamlParser implements ConfigParser {
 
     public SimpleYamlParser(String filePath) throws IOException {
         config = loadConfig(filePath);
+//        try {
+//            Linter.run(new YamlLintConfig(IOUtils.toString(new FileInputStream("default.yml"))), config);
+//        } catch (YamlLintConfigException e) {
+//            e.printStackTrace();
+//        }
 
         /*Yaml yaml = new Yaml();
         Items items = yaml.loadAs(new InputStreamReader(new FileInputStream(config)), Items.class);
@@ -57,7 +67,7 @@ public class SimpleYamlParser implements ConfigParser {
     }
 
     @Override
-    public MenuSystem parseMenuSystem() throws FileNotFoundException {
+    public MenuSystem parseMenuSystem(MacrosParser macrosParser) throws FileNotFoundException {
         return new Yaml().loadAs(new InputStreamReader(new FileInputStream(config)), MenuSystem.class);
         // FIXME check for null elements
         // two items/frames with the same names

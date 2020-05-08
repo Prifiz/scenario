@@ -15,11 +15,15 @@ public class Main  {
 
         // TODO:
         /*  v 1.0 Definition Of Done:
-            * unit tests
+            *
+            * unit tests+
             * CI
-            * dead-end finder
+            *
+            * [x] yaml macros (@exitItem, etc.)+
+            * inbuilt and custom items/frames (reuse)
+            * dead-end finder+
+            * endless cycle detector (cycle without exit item)
             * input control
-            * yaml macros (@exitItem, etc.)
             * simple text (message) item
             * more than one home item finder
             * no text defined in frame (menu- or item-level),
@@ -27,6 +31,7 @@ public class Main  {
             * duplicated fields in one menu
             * reusable items
             * incorrectInputMessage in yaml
+            * re-unmarshall yaml files after each step - changes can be applied on the fly (optional, by method)
         */
     }
 
