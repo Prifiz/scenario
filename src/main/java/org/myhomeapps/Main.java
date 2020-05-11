@@ -20,17 +20,16 @@ public class Main  {
             * CI
             *
             * [x] yaml macros (@exitItem, etc.)+
+            * [x] more than one home item finder
+            *
             * inbuilt and custom items/frames (reuse)
             * dead-end finder+
             * endless cycle detector (cycle without exit item)
-            * input control
+            * input control with incorrectInputMessage in yaml
             * simple text (message) item
-            * more than one home item finder
             * no text defined in frame (menu- or item-level),
             *   i.e. user isn't shown any text and input expected
             * duplicated fields in one menu
-            * reusable items
-            * incorrectInputMessage in yaml
             * re-unmarshall yaml files after each step - changes can be applied on the fly (optional, by method)
         */
     }

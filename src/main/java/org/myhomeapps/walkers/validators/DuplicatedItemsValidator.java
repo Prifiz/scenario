@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DuplicatesFinderValidator implements GraphValidator<MenuFrame, DefaultEdge> {
+public class DuplicatedItemsValidator implements GraphValidator<MenuFrame, DefaultEdge> {
 
     @Override
     public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph)  {

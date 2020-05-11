@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class DeadEndsFinderValidator implements GraphValidator<MenuFrame, DefaultEdge> {
+public class DeadEndsValidator implements GraphValidator<MenuFrame, DefaultEdge> {
 
     @Override
     public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph) {
