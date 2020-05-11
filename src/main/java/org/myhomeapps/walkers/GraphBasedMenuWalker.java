@@ -9,10 +9,7 @@ import org.myhomeapps.config.SimpleYamlParser;
 import org.myhomeapps.formatters.SimpleMenuFormatter;
 import org.myhomeapps.menuentities.*;
 import org.myhomeapps.printers.FormattedMenuPrinter;
-import org.myhomeapps.walkers.validators.DeadEndsValidator;
-import org.myhomeapps.walkers.validators.FramesWithoutTextValidator;
-import org.myhomeapps.walkers.validators.GraphValidator;
-import org.myhomeapps.walkers.validators.MultipleHomeFramesValidator;
+import org.myhomeapps.walkers.validators.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -34,7 +31,8 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         validators.add(new DeadEndsValidator());
         validators.add(new MultipleHomeFramesValidator());
         validators.add(new FramesWithoutTextValidator());
-
+        validators.add(new MenuItemsWithoutTextValidator());
+        
         //validators.add(new DuplicatesFinderValidator());
         // ...
 

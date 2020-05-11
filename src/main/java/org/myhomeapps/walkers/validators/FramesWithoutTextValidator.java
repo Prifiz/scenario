@@ -16,6 +16,7 @@ public class FramesWithoutTextValidator implements GraphValidator<MenuFrame, Def
     @Override
     public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph) {
         List<String> occurrences = graph.vertexSet().stream()
+                .filter(MenuFrame::isInputExpected)
                 .filter(frame -> StringUtils.isBlank(frame.getText()))
                 .map(MenuFrame::getName)
                 .collect(Collectors.toList());

@@ -160,7 +160,7 @@ public class MenuFrame extends Observable {
     }
 
     public boolean isInputExpected() {
-        return inputExpected;
+        return new DefaultMacrosParser().parseMacros(properties).isInputExpected();
     }
 
     public List<String> getProperties() {
