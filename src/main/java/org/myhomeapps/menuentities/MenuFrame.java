@@ -14,7 +14,6 @@ public class MenuFrame extends Observable {
     private String field;
     private List<String> properties;
     private List<MenuItem> items;
-    private boolean inputExpected = true;
 
 
     public MenuFrame(int id, String name, String text, String gotoMenu) {
@@ -134,10 +133,6 @@ public class MenuFrame extends Observable {
 
     public void setItems(List<MenuItem> items) {
         this.items = items;
-    }
-
-    public void setInputExpected(boolean inputExpected) {
-        this.inputExpected = inputExpected;
     }
 
     //    @Override

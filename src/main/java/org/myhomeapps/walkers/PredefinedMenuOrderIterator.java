@@ -101,6 +101,9 @@ public class PredefinedMenuOrderIterator<V, E>
             if(item.getText().equalsIgnoreCase(userInput)) {
                 return item;
             }
+            if(item.getInputAlternatives().stream().anyMatch(altInput -> altInput.equalsIgnoreCase(userInput))) {
+                return item;
+            }
         }
         throw new IOException("No item chosen");
     }

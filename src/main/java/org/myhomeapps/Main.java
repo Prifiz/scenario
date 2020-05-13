@@ -16,19 +16,23 @@ public class Main  {
         // TODO:
         /*  v 1.0 Definition Of Done:
             *
-            * unit tests+
-            * CI
+            * [>] unit tests
+            * [ ] CI
             *
-            * [x] yaml macros (@exitItem, etc.)+
+            * [x] yaml macros (@exitItem, etc.)
             * [x] more than one home item finder
             * [x] no text defined in frame (menu- or item-level),
             *   i.e. user isn't shown any text and input expected
+            * [x] acceptable input alternatives (y, yes, true, +) for frames and items
             *
-            * input control with incorrectInputMessage in yaml
-            * inbuilt and custom items/frames (reuse)
-            * dead-end finder+
-            * endless cycle detector (cycle without exit item)
-            * re-unmarshall yaml files after each step - changes can be applied on the fly (optional, by method)
+            * [ ] menu templates
+            * [ ] input control with incorrectInputMessage in yaml
+            * [ ] dead-end finder+
+            * [ ] endless cycle detector (cycle without exit item)
+            *
+            * [ ] re-unmarshall yaml files after each step - changes can be applied on the fly (optional, by method)
+            * [ ] autocomplete input according to variants?
+            * [ ] feedback menu walker - write input and/or some macro result outside to be read and processed
         */
     }
 

@@ -1,5 +1,7 @@
 package org.myhomeapps.menuentities;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class MenuItem {
@@ -8,6 +10,7 @@ public class MenuItem {
     private String name;
     private String text;
     private String gotoMenu;
+    private List<String> inputAlternatives = new ArrayList<>();
 
     public MenuItem(int id, String name, String text, String gotoMenu) {
         this.id = id;
@@ -77,5 +80,13 @@ public class MenuItem {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    public List<String> getInputAlternatives() {
+        return inputAlternatives;
+    }
+
+    public void setInputAlternatives(List<String> inputAlternatives) {
+        this.inputAlternatives = inputAlternatives;
     }
 }
