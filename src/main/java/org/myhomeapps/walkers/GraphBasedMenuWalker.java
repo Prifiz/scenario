@@ -1,5 +1,6 @@
 package org.myhomeapps.walkers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.GraphIterator;
@@ -8,10 +9,15 @@ import org.myhomeapps.config.ConfigParser;
 import org.myhomeapps.config.SimpleYamlParser;
 import org.myhomeapps.formatters.SimpleMenuFormatter;
 import org.myhomeapps.menuentities.*;
+import org.myhomeapps.menuentities.input.AbstractInputRule;
+import org.myhomeapps.menuentities.input.InputCheckingRule;
+import org.myhomeapps.menuentities.input.InputRule;
 import org.myhomeapps.printers.FormattedMenuPrinter;
 import org.myhomeapps.walkers.validators.*;
+import org.reflections.Reflections;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.*;
 
 public final class GraphBasedMenuWalker extends Observable implements MenuWalker {
@@ -53,19 +59,57 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
 
 
     @Override
-    public void run() {
+    public void run() throws IOException {
         MacrosParser macrosParser = new DefaultMacrosParser();
         MenuFrame homeFrame = menuSystem.getHomeFrame(macrosParser);
         GraphIterator<MenuFrame, DefaultEdge> it = new PredefinedMenuOrderIterator<>(menuGraph, homeFrame);
+
+        Reflections reflections = new Reflections("org.myhomeapps");
+        Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(InputCheckingRule.class);
+
         while (it.hasNext()) {
             MenuFrame currentMenu = it.next();
-            new FormattedMenuPrinter(new SimpleMenuFormatter(), System.out).print(currentMenu);
 
-            Macros macros = macrosParser.parseMacros(currentMenu.getProperties());
+            doRun(currentMenu, macrosParser);
 
-            if(macros.isInputExpected()) {
-                currentMenu.setUserInput(new Scanner(System.in).nextLine());
+            while (currentMenu.getInputRules().stream()
+                    .map(inputRule -> parseRule(inputRule, annotatedClasses))
+                    .anyMatch(rule -> !rule.checkRule(currentMenu.getUserInput()))) {
+
+                doRun(currentMenu, macrosParser);
             }
+
+        }
+    }
+
+    private AbstractInputRule parseRule(InputRule inputRule, Set<Class<?>> annotatedClasses) throws RuntimeException {
+
+        for(Class<?> clazz : annotatedClasses) {
+            try {
+                Constructor<?> cons = clazz.getConstructor(String.class);
+                AbstractInputRule rule;
+                if(StringUtils.isNotBlank(inputRule.getErrorMessage())) {
+                    rule = (AbstractInputRule) cons.newInstance(inputRule.getErrorMessage());
+                } else {
+                    rule = (AbstractInputRule) clazz.newInstance();
+                }
+                if (rule.getRule().equals(inputRule.getRule())) {
+                    return rule;
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException("Couldn't parse rule", ex);
+            }
+        }
+        throw new RuntimeException("No such rule declared: " + inputRule.getRule());
+    }
+
+    private void doRun(MenuFrame currentMenu, MacrosParser macrosParser) {
+        new FormattedMenuPrinter(new SimpleMenuFormatter(), System.out).print(currentMenu);
+
+        Macros macros = macrosParser.parseMacros(currentMenu.getProperties());
+
+        if(macros.isInputExpected()) {
+            currentMenu.setUserInput(new Scanner(System.in).nextLine());
         }
     }
 

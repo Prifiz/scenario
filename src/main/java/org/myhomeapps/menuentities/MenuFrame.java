@@ -1,5 +1,7 @@
 package org.myhomeapps.menuentities;
 
+import org.myhomeapps.menuentities.input.InputRule;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,6 +16,7 @@ public class MenuFrame extends Observable {
     private String field;
     private List<String> properties;
     private List<MenuItem> items;
+    private List<InputRule> inputRules = new ArrayList<>();
 
 
     public MenuFrame(int id, String name, String text, String gotoMenu) {
@@ -164,5 +167,13 @@ public class MenuFrame extends Observable {
 
     public void setProperties(List<String> properties) {
         this.properties = properties;
+    }
+
+    public List<InputRule> getInputRules() {
+        return inputRules;
+    }
+
+    public void setInputRules(List<InputRule> inputRules) {
+        this.inputRules = inputRules;
     }
 }

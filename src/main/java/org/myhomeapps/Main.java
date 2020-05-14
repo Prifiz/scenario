@@ -26,11 +26,10 @@ public class Main  {
             * [x] acceptable input alternatives (y, yes, true, +) for frames and items
             *
             * [ ] menu templates
-            * [ ] input control with incorrectInputMessage in yaml
+            * [x] input control with incorrectInputMessage in yaml
             * [ ] dead-end finder+
             * [ ] endless cycle detector (cycle without exit item)
             *
-            * [ ] re-unmarshall yaml files after each step - changes can be applied on the fly (optional, by method)
             * [ ] autocomplete input according to variants?
             * [ ] feedback menu walker - write input and/or some macro result outside to be read and processed
         */
