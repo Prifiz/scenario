@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 public interface ConfigParser {
-    MenuSystem parseMenuSystem(MacrosParser macrosParser) throws FileNotFoundException;
+    MenuSystem parseMenuSystem() throws FileNotFoundException;
     List<MenuItem> parseStandaloneItems();
     MenuSettings parseSettings();
 }

@@ -16,4 +16,8 @@ public class Macros {
     public boolean isInputExpected() {
         return macros.stream().noneMatch(macro -> NoInputExpectedMacro.class.equals(macro.getClass()));
     }
+
+    public boolean isExit() {
+        return macros.stream().anyMatch(macro -> ExitMacro.class.equals(macro.getClass()));
+    }
 }

@@ -3,87 +3,81 @@ package org.myhomeapps.walkers.validators;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
+import org.myhomeapps.menuentities.MacrosParser;
 import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.walkers.GraphIssue;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DeadEndsValidator implements GraphValidator<MenuFrame, DefaultEdge> {
 
-    @Override
-    public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph) {
+    private int[][] adjacencyMatrix;
+    private final MacrosParser macrosParser;
 
-        //adjacencyOutput(graph);
-
-        return Collections.emptyList();
-
+    public DeadEndsValidator(MacrosParser macrosParser) {
+        this.macrosParser = macrosParser;
     }
 
+    @Override
+    public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph) {
+        this.adjacencyMatrix = buildAdjacencyMatrix(graph);;
+        //printAdjacencyMatrix();
 
-    void adjacencyOutput(Graph<MenuFrame, DefaultEdge> graph) {
-        try {
-            int[][] adjacencyMatrix = buildAdjacencyMatrix(graph);
-            for (int i = 0; i < adjacencyMatrix.length; i++) {
-                for (int j = 0; j < adjacencyMatrix.length; j++) {
-                    System.out.print(adjacencyMatrix[i][j] + "\t");
-                }
-                System.out.println();
-            }
+        List<String> occurrences =  getDeadEndFrames(graph).stream()
+                .filter(frame -> !macrosParser.parseMacros(frame.getProperties()).isExit())
+                .map(MenuFrame::getName)
+                .collect(Collectors.toList());
 
-        } catch (IOException exception) {
-            exception.printStackTrace();
+        if(occurrences.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            return Collections.singletonList(new GraphIssue("Dead Ends found in menu frames", occurrences));
         }
     }
 
-    int[][] buildAdjacencyMatrix(Graph<MenuFrame, DefaultEdge> graph) throws IOException {
+
+    private void printAdjacencyMatrix() {
+        for (int[] matrix : adjacencyMatrix) {
+            for (int j = 0; j < adjacencyMatrix.length; j++) {
+                System.out.print(matrix[j] + "\t");
+            }
+            System.out.println();
+        }
+    }
+
+    private int[][] buildAdjacencyMatrix(Graph<MenuFrame, DefaultEdge> graph) {
         List<MenuFrame> vertices = new ArrayList<>(graph.vertexSet());
         int dimension = vertices.size();
         int[][] result = new int[dimension][dimension];
 
         for (int i = 0; i < dimension; i++) {
             MenuFrame vi = vertices.get(i);
-            System.out.println("Vi = " + vi.getName() + "\t i = " + i);
             for (int j = 0; j < dimension; j++) {
                 MenuFrame vj = vertices.get(j);
-                System.out.println("Vj = " + vj.getName() + "\t j = " + j);
-
                 if (vi.equals(vj)) {
-                    System.out.println("Diagonal element");
                     result[i][j] = 0;
                 } else {
-                    if (Graphs.vertexHasSuccessors(graph, vi)) {
-                        if (Graphs.vertexHasPredecessors(graph, vj)) {
-                            if (Graphs.successorListOf(graph, vi).contains(vj) &&
-                                    Graphs.predecessorListOf(graph, vj).contains(vi)) {
-                                result[i][j] = 1;
-                            } else {
-                                result[i][j] = 0;
-                            }
-                        } else {
-                            result[i][j] = 0;
-                        }
+                    if (Graphs.successorListOf(graph, vi).contains(vj) &&
+                            Graphs.predecessorListOf(graph, vj).contains(vi)) {
+                        result[i][j] = 1;
                     } else {
                         result[i][j] = 0;
                     }
                 }
-                System.out.println(String.format("Result[%s][%s] = %s", i, j, result[i][j]));
             }
-
         }
-
-        for (int idx : getZerosLineIndices(result)) {
-            System.out.println("Zero line idx: " + idx);
-            System.out.println("Suspicious vertex: " + vertices.get(idx).getName());
-        }
-
         return result;
     }
 
-    List<Integer> getZerosLineIndices(int[][] adjacencyMatrix) {
+    private List<MenuFrame> getDeadEndFrames(Graph<MenuFrame, DefaultEdge> graph) {
+        List<MenuFrame> vertices = new ArrayList<>(graph.vertexSet());
+        return getZerosLineIndices().stream()
+                .map(vertices::get)
+                .collect(Collectors.toList());
+    }
+
+    private List<Integer> getZerosLineIndices() {
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < adjacencyMatrix.length; i++) {
             if (isZeroLine(adjacencyMatrix[i])) {
@@ -93,12 +87,8 @@ public class DeadEndsValidator implements GraphValidator<MenuFrame, DefaultEdge>
         return result;
     }
 
-    boolean isZeroLine(int[] line) {
-        for (int value : line) {
-            if (value == 1) {
-                return false;
-            }
-        }
-        return true;
+    private boolean isZeroLine(int[] line) {
+        return Arrays.stream(line)
+                .allMatch(current -> current == 0);
     }
 }

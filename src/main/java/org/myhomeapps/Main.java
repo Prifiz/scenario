@@ -24,14 +24,17 @@ public class Main  {
             * [x] no text defined in frame (menu- or item-level),
             *   i.e. user isn't shown any text and input expected
             * [x] acceptable input alternatives (y, yes, true, +) for frames and items
-            *
-            * [ ] menu templates
             * [x] input control with incorrectInputMessage in yaml
-            * [ ] dead-end finder+
+            * [x] dead-end finder
             * [ ] endless cycle detector (cycle without exit item)
             *
+            *
+            * For Future Releases:
+            * [ ] menu templates
             * [ ] autocomplete input according to variants?
             * [ ] feedback menu walker - write input and/or some macro result outside to be read and processed
+            * [ ] record menu walk history
+            * [ ] goBack frame/item
         */
     }
 

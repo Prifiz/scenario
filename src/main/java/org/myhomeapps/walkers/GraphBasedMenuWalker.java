@@ -30,12 +30,12 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         ConfigParser parser = new SimpleYamlParser("menuSystem.yaml");
         MacrosParser macrosParser = new DefaultMacrosParser(); // will be used in validations
 
-        menuSystem = parser.parseMenuSystem(macrosParser);
+        menuSystem = parser.parseMenuSystem();
         menuGraph = (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder().buildFramesGraph(menuSystem);
 
         List<GraphValidator<MenuFrame, DefaultEdge>> validators = new ArrayList<>();
-        validators.add(new DeadEndsValidator());
-        validators.add(new MultipleHomeFramesValidator());
+        validators.add(new DeadEndsValidator(macrosParser));
+        validators.add(new MultipleHomeFramesValidator(macrosParser));
         validators.add(new FramesWithoutTextValidator());
         validators.add(new MenuItemsWithoutTextValidator());
         
@@ -47,8 +47,8 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
 
 
         issues.forEach(graphIssue -> {
-            System.out.println(graphIssue.getName());
-            graphIssue.getOccurrences().forEach(System.out::println);
+            System.out.println(graphIssue.getName() + ":");
+            graphIssue.getOccurrences().forEach(occurrence -> System.out.println("\t" + occurrence));
         });
 
         if (!issues.isEmpty()) {
