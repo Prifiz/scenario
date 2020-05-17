@@ -36,11 +36,9 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         List<GraphValidator<MenuFrame, DefaultEdge>> validators = new ArrayList<>();
         validators.add(new DeadEndsValidator(macrosParser));
         validators.add(new MultipleHomeFramesValidator(macrosParser));
+        validators.add(new EndlessCyclesValidator(macrosParser));
         validators.add(new FramesWithoutTextValidator());
         validators.add(new MenuItemsWithoutTextValidator());
-        
-        //validators.add(new DuplicatesFinderValidator());
-        // ...
 
         List<GraphIssue> issues = new ArrayList<>();
         validators.forEach(currentValidator -> issues.addAll(currentValidator.validate(menuGraph)));

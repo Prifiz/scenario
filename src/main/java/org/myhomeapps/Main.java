@@ -1,5 +1,6 @@
 package org.myhomeapps;
 
+import org.jgrapht.alg.cycle.CycleDetector;
 import org.myhomeapps.adapters.CalcAdapter;
 import org.myhomeapps.walkers.GraphBasedMenuWalker;
 import org.myhomeapps.walkers.MenuWalker;
@@ -18,6 +19,8 @@ public class Main  {
             *
             * [>] unit tests
             * [ ] CI
+            * [ ] logger
+            * [ ] lombok
             *
             * [x] yaml macros (@exitItem, etc.)
             * [x] more than one home item finder
@@ -26,7 +29,7 @@ public class Main  {
             * [x] acceptable input alternatives (y, yes, true, +) for frames and items
             * [x] input control with incorrectInputMessage in yaml
             * [x] dead-end finder
-            * [ ] endless cycle detector (cycle without exit item)
+            * [x] endless cycle detector (cycle without exit item)
             *
             *
             * For Future Releases:
@@ -34,7 +37,7 @@ public class Main  {
             * [ ] autocomplete input according to variants?
             * [ ] feedback menu walker - write input and/or some macro result outside to be read and processed
             * [ ] record menu walk history
-            * [ ] goBack frame/item
+            * [ ] in-built goBack frame/item
         */
     }
 

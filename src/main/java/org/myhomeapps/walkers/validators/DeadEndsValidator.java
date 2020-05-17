@@ -10,13 +10,12 @@ import org.myhomeapps.walkers.GraphIssue;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DeadEndsValidator implements GraphValidator<MenuFrame, DefaultEdge> {
+public class DeadEndsValidator extends PropertiesBasedGraphValidator {
 
     private int[][] adjacencyMatrix;
-    private final MacrosParser macrosParser;
 
     public DeadEndsValidator(MacrosParser macrosParser) {
-        this.macrosParser = macrosParser;
+        super(macrosParser);
     }
 
     @Override

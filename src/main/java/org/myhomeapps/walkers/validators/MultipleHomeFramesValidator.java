@@ -11,12 +11,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MultipleHomeFramesValidator implements GraphValidator<MenuFrame, DefaultEdge> {
+public class MultipleHomeFramesValidator extends PropertiesBasedGraphValidator {
 
-    private final MacrosParser macrosParser;
 
     public MultipleHomeFramesValidator(MacrosParser macrosParser) {
-        this.macrosParser = macrosParser;
+        super(macrosParser);
     }
 
     @Override
