@@ -1,10 +1,10 @@
-package org.myhomeapps.menuentities;
+package org.myhomeapps.menuentities.properties;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class HomeMacro implements Macro {
+public class HomeProperty implements Property {
     @Override
     public Collection<String> getDisplayNames() {
         List<String> homeValues = new ArrayList<>();

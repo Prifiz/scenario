@@ -2,7 +2,6 @@ package org.myhomeapps.walkers.validators;
 
 import org.jgrapht.Graph;
 import org.myhomeapps.menuentities.MenuFrame;
-import org.myhomeapps.walkers.GraphIssue;
 
 import java.util.Collection;
 

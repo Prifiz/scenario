@@ -1,8 +1,7 @@
-package org.myhomeapps.menuentities;
+package org.myhomeapps.menuentities.properties;
 
 import java.util.Collection;
 
-public interface Macro {
+public interface Property {
     Collection<String> getDisplayNames();
-
 }

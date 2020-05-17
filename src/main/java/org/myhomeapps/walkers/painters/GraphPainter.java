@@ -1,4 +1,4 @@
-package org.myhomeapps.walkers;
+package org.myhomeapps.walkers.painters;
 
 import org.jgrapht.Graph;
 

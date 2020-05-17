@@ -3,9 +3,8 @@ package org.myhomeapps.walkers.validators;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
-import org.myhomeapps.menuentities.MacrosParser;
+import org.myhomeapps.menuentities.properties.PropertiesParser;
 import org.myhomeapps.menuentities.MenuFrame;
-import org.myhomeapps.walkers.GraphIssue;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,17 +13,17 @@ public class DeadEndsValidator extends PropertiesBasedGraphValidator {
 
     private int[][] adjacencyMatrix;
 
-    public DeadEndsValidator(MacrosParser macrosParser) {
-        super(macrosParser);
+    public DeadEndsValidator(PropertiesParser propertiesParser) {
+        super(propertiesParser);
     }
 
     @Override
     public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph) {
-        this.adjacencyMatrix = buildAdjacencyMatrix(graph);;
+        this.adjacencyMatrix = buildAdjacencyMatrix(graph);
         //printAdjacencyMatrix();
 
         List<String> occurrences =  getDeadEndFrames(graph).stream()
-                .filter(frame -> !macrosParser.parseMacros(frame.getProperties()).isExit())
+                .filter(frame -> !propertiesParser.parseProperties(frame.getProperties()).isExit())
                 .map(MenuFrame::getName)
                 .collect(Collectors.toList());
 

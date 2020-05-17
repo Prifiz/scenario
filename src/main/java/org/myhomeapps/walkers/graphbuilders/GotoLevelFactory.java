@@ -1,4 +1,4 @@
-package org.myhomeapps.walkers;
+package org.myhomeapps.walkers.graphbuilders;
 
 import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.menuentities.MenuItem;
@@ -10,7 +10,7 @@ public class GotoLevelFactory {
     private final GotoLevel level;
 
     public enum GotoLevel {
-        MENU, ITEM;
+        MENU, ITEM
     }
 
     public GotoLevelFactory(MenuFrame frame) throws IOException {

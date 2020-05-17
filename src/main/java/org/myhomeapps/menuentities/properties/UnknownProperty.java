@@ -1,13 +1,13 @@
-package org.myhomeapps.menuentities;
+package org.myhomeapps.menuentities.properties;
 
 import java.util.Collection;
 import java.util.Collections;
 
-public class UnknownMacro implements Macro {
+public class UnknownProperty implements Property {
 
     private String nonParsedText;
 
-    public UnknownMacro(String nonParsedText) {
+    public UnknownProperty(String nonParsedText) {
         this.nonParsedText = nonParsedText;
     }
 

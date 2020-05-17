@@ -8,11 +8,16 @@ import org.myhomeapps.adapters.CommandLineAdapter;
 import org.myhomeapps.config.ConfigParser;
 import org.myhomeapps.config.SimpleYamlParser;
 import org.myhomeapps.formatters.SimpleMenuFormatter;
-import org.myhomeapps.menuentities.*;
+import org.myhomeapps.menuentities.MenuFrame;
+import org.myhomeapps.menuentities.MenuSystem;
 import org.myhomeapps.menuentities.input.AbstractInputRule;
 import org.myhomeapps.menuentities.input.InputCheckingRule;
 import org.myhomeapps.menuentities.input.InputRule;
+import org.myhomeapps.menuentities.properties.DefaultPropertiesParser;
+import org.myhomeapps.menuentities.properties.Properties;
+import org.myhomeapps.menuentities.properties.PropertiesParser;
 import org.myhomeapps.printers.FormattedMenuPrinter;
+import org.myhomeapps.walkers.graphbuilders.DefaultGraphBuilder;
 import org.myhomeapps.walkers.validators.*;
 import org.reflections.Reflections;
 
@@ -22,23 +27,24 @@ import java.util.*;
 
 public final class GraphBasedMenuWalker extends Observable implements MenuWalker {
 
-    private final MenuSystem menuSystem;
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
-    private Set<Macro> macros = new HashSet<>();
 
     public GraphBasedMenuWalker() throws IOException {
         ConfigParser parser = new SimpleYamlParser("menuSystem.yaml");
-        MacrosParser macrosParser = new DefaultMacrosParser(); // will be used in validations
+        PropertiesParser propertiesParser = new DefaultPropertiesParser();
 
-        menuSystem = parser.parseMenuSystem();
+        MenuSystem menuSystem = parser.parseMenuSystem();
         menuGraph = (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder().buildFramesGraph(menuSystem);
 
+//        new SimpleGraphPainter<MenuFrame, DefaultEdge>().paint(menuGraph, "graph.png");
+
         List<GraphValidator<MenuFrame, DefaultEdge>> validators = new ArrayList<>();
-        validators.add(new DeadEndsValidator(macrosParser));
-        validators.add(new MultipleHomeFramesValidator(macrosParser));
-        validators.add(new EndlessCyclesValidator(macrosParser));
+        validators.add(new DeadEndsValidator(propertiesParser));
+        validators.add(new MultipleHomeFramesValidator(propertiesParser));
+        validators.add(new EndlessCyclesValidator(propertiesParser));
         validators.add(new FramesWithoutTextValidator());
         validators.add(new MenuItemsWithoutTextValidator());
+        validators.add(new DuplicatedFramesValidator());
 
         List<GraphIssue> issues = new ArrayList<>();
         validators.forEach(currentValidator -> issues.addAll(currentValidator.validate(menuGraph)));
@@ -54,45 +60,46 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         }
     }
 
-
+    private MenuFrame findHomeFrame(PropertiesParser propertiesParser) {
+        return menuGraph.vertexSet().stream()
+                .filter(frame -> propertiesParser.parseProperties(frame.getProperties()).containsHome())
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("Couldn't find home frame"));
+    }
 
     @Override
-    public void run() throws IOException {
-        MacrosParser macrosParser = new DefaultMacrosParser();
-        MenuFrame homeFrame = menuSystem.getHomeFrame(macrosParser);
-        GraphIterator<MenuFrame, DefaultEdge> it = new PredefinedMenuOrderIterator<>(menuGraph, homeFrame);
+    public void run() {
+        PropertiesParser propertiesParser = new DefaultPropertiesParser();
+        MenuFrame homeFrame = findHomeFrame(propertiesParser);
+        GraphIterator<MenuFrame, DefaultEdge> graphIterator = new PredefinedMenuOrderIterator<>(menuGraph, homeFrame);
 
         Reflections reflections = new Reflections("org.myhomeapps");
         Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(InputCheckingRule.class);
 
-        while (it.hasNext()) {
-            MenuFrame currentMenu = it.next();
-
-            doRun(currentMenu, macrosParser);
-
+        while (graphIterator.hasNext()) {
+            MenuFrame currentMenu = graphIterator.next();
+            doRun(currentMenu, propertiesParser);
             while (currentMenu.getInputRules().stream()
                     .map(inputRule -> parseRule(inputRule, annotatedClasses))
                     .anyMatch(rule -> !rule.checkRule(currentMenu.getUserInput()))) {
-
-                doRun(currentMenu, macrosParser);
+                doRun(currentMenu, propertiesParser);
             }
-
         }
     }
 
     private AbstractInputRule parseRule(InputRule inputRule, Set<Class<?>> annotatedClasses) throws RuntimeException {
 
-        for(Class<?> clazz : annotatedClasses) {
+        for (Class<?> clazz : annotatedClasses) {
             try {
-                Constructor<?> cons = clazz.getConstructor(String.class);
-                AbstractInputRule rule;
-                if(StringUtils.isNotBlank(inputRule.getErrorMessage())) {
-                    rule = (AbstractInputRule) cons.newInstance(inputRule.getErrorMessage());
+                Constructor<?> ruleConstructor = clazz.getConstructor(String.class);
+                AbstractInputRule ruleInstance;
+                if (StringUtils.isNotBlank(inputRule.getErrorMessage())) {
+                    ruleInstance = (AbstractInputRule) ruleConstructor.newInstance(inputRule.getErrorMessage());
                 } else {
-                    rule = (AbstractInputRule) clazz.newInstance();
+                    ruleInstance = (AbstractInputRule) clazz.newInstance();
                 }
-                if (rule.getRule().equals(inputRule.getRule())) {
-                    return rule;
+                if (ruleInstance.getRule().equals(inputRule.getRule())) {
+                    return ruleInstance;
                 }
             } catch (Exception ex) {
                 throw new RuntimeException("Couldn't parse rule", ex);
@@ -101,12 +108,10 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         throw new RuntimeException("No such rule declared: " + inputRule.getRule());
     }
 
-    private void doRun(MenuFrame currentMenu, MacrosParser macrosParser) {
+    private void doRun(MenuFrame currentMenu, PropertiesParser propertiesParser) {
         new FormattedMenuPrinter(new SimpleMenuFormatter(), System.out).print(currentMenu);
-
-        Macros macros = macrosParser.parseMacros(currentMenu.getProperties());
-
-        if(macros.isInputExpected()) {
+        Properties properties = propertiesParser.parseProperties(currentMenu.getProperties());
+        if (properties.isInputExpected()) {
             currentMenu.setUserInput(new Scanner(System.in).nextLine());
         }
     }
@@ -114,12 +119,6 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
     @Override
     public void registerAdapter(CommandLineAdapter adapter) {
         menuGraph.vertexSet().forEach(frame -> frame.addObserver(adapter));
-    }
-
-    @Override
-    public void registerCustomMacro(Macro customMacro) { // FIXME how will it work for user??? Behavior??!!
-        // Can be used in custom validations!!!
-        macros.add(customMacro);
     }
 
     // TODO custom input control

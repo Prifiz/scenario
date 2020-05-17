@@ -13,11 +13,12 @@ public abstract class AbstractInputRule extends InputRule {
     }
 
     public boolean checkRule(String input) {
-        if(!isPassed(input)) {
+        if(isPassed(input)) {
+            return true;
+        } else {
             System.out.println(getErrorMessage());
             return false;
         }
-        return true;
     }
 
     public abstract boolean isPassed(String input);

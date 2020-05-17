@@ -1,4 +1,4 @@
-package org.myhomeapps.walkers;
+package org.myhomeapps.walkers.painters;
 
 import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.mxIGraphLayout;

@@ -1,4 +1,4 @@
-package org.myhomeapps.walkers;
+package org.myhomeapps.walkers.validators;
 
 import java.util.List;
 

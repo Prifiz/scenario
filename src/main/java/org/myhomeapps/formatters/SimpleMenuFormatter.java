@@ -6,7 +6,6 @@ import org.myhomeapps.menuentities.MenuItem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class SimpleMenuFormatter implements MenuFormatter {
     public String format(MenuFrame frame) {

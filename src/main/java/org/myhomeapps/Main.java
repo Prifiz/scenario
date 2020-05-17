@@ -1,6 +1,5 @@
 package org.myhomeapps;
 
-import org.jgrapht.alg.cycle.CycleDetector;
 import org.myhomeapps.adapters.CalcAdapter;
 import org.myhomeapps.walkers.GraphBasedMenuWalker;
 import org.myhomeapps.walkers.MenuWalker;
@@ -20,7 +19,7 @@ public class Main  {
             * [>] unit tests
             * [ ] CI
             * [ ] logger
-            * [ ] lombok
+            * [>] lombok
             *
             * [x] yaml macros (@exitItem, etc.)
             * [x] more than one home item finder
@@ -38,6 +37,9 @@ public class Main  {
             * [ ] feedback menu walker - write input and/or some macro result outside to be read and processed
             * [ ] record menu walk history
             * [ ] in-built goBack frame/item
+            * [ ] common menu settings
+            * [ ] goBack feature
+            * [ ] custom properties
         */
     }
 

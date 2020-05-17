@@ -1,9 +1,9 @@
-package org.myhomeapps.menuentities;
+package org.myhomeapps.menuentities.properties;
 
 import java.util.Collection;
 import java.util.Collections;
 
-public class ExitMacro implements Macro {
+public class ExitProperty implements Property {
 
     public Collection<String> getDisplayNames() {
         return Collections.singletonList("exit");

@@ -6,9 +6,8 @@ import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector;
 import org.jgrapht.alg.interfaces.StrongConnectivityAlgorithm;
 import org.jgrapht.alg.shortestpath.AllDirectedPaths;
 import org.jgrapht.graph.DefaultEdge;
-import org.myhomeapps.menuentities.MacrosParser;
+import org.myhomeapps.menuentities.properties.PropertiesParser;
 import org.myhomeapps.menuentities.MenuFrame;
-import org.myhomeapps.walkers.GraphIssue;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,8 +15,8 @@ import java.util.stream.Stream;
 
 public class EndlessCyclesValidator extends PropertiesBasedGraphValidator {
 
-    public EndlessCyclesValidator(MacrosParser macrosParser) {
-        super(macrosParser);
+    public EndlessCyclesValidator(PropertiesParser propertiesParser) {
+        super(propertiesParser);
     }
 
     @Override
@@ -32,7 +31,7 @@ public class EndlessCyclesValidator extends PropertiesBasedGraphValidator {
                 .collect(Collectors.toSet());
 
         List<String> occurrences = lockedFrames.stream()
-                .filter(frame -> !macrosParser.parseMacros(frame.getProperties()).isExit())
+                .filter(frame -> !propertiesParser.parseProperties(frame.getProperties()).isExit())
                 .map(MenuFrame::getName)
                 .collect(Collectors.toList());
 
@@ -64,7 +63,7 @@ public class EndlessCyclesValidator extends PropertiesBasedGraphValidator {
 
     private MenuFrame findExitFrame(Graph<MenuFrame, DefaultEdge> graph) {
         for(MenuFrame frame : graph.vertexSet()) {
-            if(macrosParser.parseMacros(frame.getProperties()).isExit()) {
+            if(propertiesParser.parseProperties(frame.getProperties()).isExit()) {
                 return frame;
             }
         }
@@ -89,16 +88,14 @@ public class EndlessCyclesValidator extends PropertiesBasedGraphValidator {
         List<MenuFrame> result = new ArrayList<>();
         AllDirectedPaths<MenuFrame, DefaultEdge> paths = new AllDirectedPaths<>(graph);
 
-        cycles.forEach(cycle -> {
-            cycle.forEach(frame -> {
-                List<GraphPath<MenuFrame, DefaultEdge>> pathsToExit =
-                        paths.getAllPaths(frame, exitFrame, true, null);
-                if(pathsToExit.isEmpty()) {
-                    System.out.println("No path to exit from cycle frame: " + frame.getName());
-                    result.add(frame);
-                }
-            });
-        });
+        cycles.forEach(cycle -> cycle.forEach(frame -> {
+            List<GraphPath<MenuFrame, DefaultEdge>> pathsToExit =
+                    paths.getAllPaths(frame, exitFrame, true, null);
+            if(pathsToExit.isEmpty()) {
+                System.out.println("No path to exit from cycle frame: " + frame.getName());
+                result.add(frame);
+            }
+        }));
         return result;
     }
 

@@ -2,9 +2,8 @@ package org.myhomeapps.walkers.validators;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
-import org.myhomeapps.menuentities.MacrosParser;
+import org.myhomeapps.menuentities.properties.PropertiesParser;
 import org.myhomeapps.menuentities.MenuFrame;
-import org.myhomeapps.walkers.GraphIssue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -14,15 +13,15 @@ import java.util.stream.Collectors;
 public class MultipleHomeFramesValidator extends PropertiesBasedGraphValidator {
 
 
-    public MultipleHomeFramesValidator(MacrosParser macrosParser) {
-        super(macrosParser);
+    public MultipleHomeFramesValidator(PropertiesParser propertiesParser) {
+        super(propertiesParser);
     }
 
     @Override
     public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph) {
         final int MAX_ALLOWED_HOME_FRAMES = 1;
         List<String> homeFramesOccurrences = graph.vertexSet().stream()
-                .filter(frame -> macrosParser.parseMacros(frame.getProperties()).containsHome())
+                .filter(frame -> propertiesParser.parseProperties(frame.getProperties()).containsHome())
                 .map(MenuFrame::getName)
                 .collect(Collectors.toList());
 

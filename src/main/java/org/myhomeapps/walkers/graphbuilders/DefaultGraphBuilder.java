@@ -1,4 +1,4 @@
-package org.myhomeapps.walkers;
+package org.myhomeapps.walkers.graphbuilders;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;

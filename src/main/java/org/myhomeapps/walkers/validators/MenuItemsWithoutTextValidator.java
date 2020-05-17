@@ -5,7 +5,6 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.menuentities.MenuItem;
-import org.myhomeapps.walkers.GraphIssue;
 
 import java.util.ArrayList;
 import java.util.Collection;
