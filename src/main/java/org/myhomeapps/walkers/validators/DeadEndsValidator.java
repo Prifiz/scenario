@@ -9,31 +9,27 @@ import org.myhomeapps.menuentities.MenuFrame;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DeadEndsValidator<V extends MenuFrame> extends PropertiesBasedGraphValidator<V> {
+public class DeadEndsValidator<V extends MenuFrame, E extends DefaultEdge> extends PropertiesBasedGraphValidator<V, E> {
 
-    private int[][] adjacencyMatrix;
+    private final int[][] adjacencyMatrix;
 
-    public DeadEndsValidator(PropertiesParser propertiesParser) {
-        super(propertiesParser);
+    public DeadEndsValidator(Graph<V, E> graph, PropertiesParser propertiesParser) {
+        super(propertiesParser, graph);
+        this.adjacencyMatrix = buildAdjacencyMatrix(graph);
     }
 
     @Override
-    public Collection<GraphIssue> validate(Graph<V, DefaultEdge> graph) {
-        this.adjacencyMatrix = buildAdjacencyMatrix(graph);
-        //printAdjacencyMatrix();
-
-        List<String> occurrences =  getDeadEndFrames(graph).stream()
+    protected Collection<String> findOccurrences() {
+        return getDeadEndFrames(graph).stream()
                 .filter(frame -> !propertiesParser.parseProperties(frame.getProperties()).isExit())
                 .map(MenuFrame::getName)
                 .collect(Collectors.toList());
-
-        if(occurrences.isEmpty()) {
-            return Collections.emptyList();
-        } else {
-            return Collections.singletonList(new GraphIssue("Dead Ends found in menu frames", occurrences));
-        }
     }
 
+    @Override
+    protected String getDisplayName() {
+        return "Dead Ends found in menu frames";
+    }
 
     private void printAdjacencyMatrix() {
         for (int[] matrix : adjacencyMatrix) {
@@ -44,7 +40,7 @@ public class DeadEndsValidator<V extends MenuFrame> extends PropertiesBasedGraph
         }
     }
 
-    private int[][] buildAdjacencyMatrix(Graph<V, DefaultEdge> graph) {
+    private int[][] buildAdjacencyMatrix(Graph<V, E> graph) {
         List<V> vertices = new ArrayList<>(graph.vertexSet());
         int dimension = vertices.size();
         int[][] result = new int[dimension][dimension];
@@ -68,7 +64,7 @@ public class DeadEndsValidator<V extends MenuFrame> extends PropertiesBasedGraph
         return result;
     }
 
-    private List<V> getDeadEndFrames(Graph<V, DefaultEdge> graph) {
+    private List<V> getDeadEndFrames(Graph<V, E> graph) {
         List<V> vertices = new ArrayList<>(graph.vertexSet());
         return getZerosLineIndices().stream()
                 .map(vertices::get)

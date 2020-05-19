@@ -7,25 +7,31 @@ import org.myhomeapps.menuentities.MenuItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DuplicatedItemsValidator implements GraphValidator<MenuFrame, DefaultEdge> {
+public class DuplicatedItemsValidator<V extends MenuFrame, E extends DefaultEdge> extends AbstractValidator<V, E> {
 
-    @Override
-    public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph)  {
-        List<String> duplicated = findDuplicatedItems(graph);
-        return duplicated.isEmpty() ? Collections.emptyList() : Collections.singletonList(
-                new GraphIssue("Duplicated Items", duplicated));
+    public DuplicatedItemsValidator(Graph<V, E> graph) {
+        super(graph);
     }
 
-    private List<String> findDuplicatedItems(Graph<MenuFrame, DefaultEdge> graph) {
+    private List<String> findDuplicatedItems(Graph<V, E> graph) {
         List<String> result = new ArrayList<>();
         graph.vertexSet().forEach(frame -> result.addAll(
                 frame.findDuplicates().stream()
                         .map(MenuItem::getName)
                         .collect(Collectors.toList())));
         return result;
+    }
+
+    @Override
+    protected Collection<String> findOccurrences() {
+        return findDuplicatedItems(graph);
+    }
+
+    @Override
+    protected String getDisplayName() {
+        return "Duplicated Items";
     }
 }

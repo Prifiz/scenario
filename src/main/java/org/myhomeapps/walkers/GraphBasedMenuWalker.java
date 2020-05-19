@@ -24,6 +24,7 @@ import org.reflections.Reflections;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class GraphBasedMenuWalker extends Observable implements MenuWalker {
 
@@ -38,17 +39,18 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
 
 //        new SimpleGraphPainter<MenuFrame, DefaultEdge>().paint(menuGraph, "graph.png");
 
-        List<GraphValidator<MenuFrame, DefaultEdge>> validators = new ArrayList<>();
-        validators.add(new DeadEndsValidator<>(propertiesParser));
-        validators.add(new MultipleHomeFramesValidator<>(propertiesParser));
-        validators.add(new EndlessCyclesValidator<>(propertiesParser));
-        validators.add(new FramesWithoutTextValidator<>());
-        validators.add(new MenuItemsWithoutTextValidator<>());
-        validators.add(new DuplicatedFramesValidator<>());
+        List<AbstractValidator<MenuFrame, DefaultEdge>> validators = new ArrayList<>();
+        validators.add(new DeadEndsValidator<>(menuGraph, propertiesParser));
+        validators.add(new MultipleHomeFramesValidator<>(menuGraph, propertiesParser));
+        validators.add(new EndlessCyclesValidator<>(menuGraph, propertiesParser));
+        validators.add(new FramesWithoutTextValidator<>(menuGraph));
+        validators.add(new MenuItemsWithoutTextValidator<>(menuGraph));
+        validators.add(new DuplicatedFramesValidator<>(menuGraph));
 
-        List<GraphIssue> issues = new ArrayList<>();
-        validators.forEach(currentValidator -> issues.addAll(currentValidator.validate(menuGraph)));
-
+        List<? extends GraphIssue> issues = validators.stream()
+                .filter(validator -> !validator.validate().getOccurrences().isEmpty())
+                .map(AbstractValidator::validate)
+                .collect(Collectors.toList());
 
         issues.forEach(graphIssue -> {
             System.out.println(graphIssue.getName() + ":");

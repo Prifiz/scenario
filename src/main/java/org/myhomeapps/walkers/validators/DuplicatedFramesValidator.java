@@ -9,20 +9,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DuplicatedFramesValidator<V extends MenuFrame> implements GraphValidator<V, DefaultEdge> {
+public class DuplicatedFramesValidator<V extends MenuFrame, E extends DefaultEdge> extends AbstractValidator<V, E> {
+
+    public DuplicatedFramesValidator(Graph<V, E> graph) {
+        super(graph);
+    }
+
     @Override
-    public Collection<GraphIssue> validate(Graph<V, DefaultEdge> graph) {
+    protected Collection<String> findOccurrences() {
         List<String> framesNames = graph.vertexSet().stream()
                 .map(MenuFrame::getName)
                 .collect(Collectors.toList());
-        List<String> occurrences = framesNames.stream()
+        return framesNames.stream()
                 .filter(name -> Collections.frequency(framesNames, name) > 1)
                 .distinct()
                 .collect(Collectors.toList());
-        if(occurrences.isEmpty()) {
-            return Collections.emptyList();
-        } else {
-            return Collections.singletonList(new GraphIssue("Duplicated frames", occurrences));
-        }
+    }
+
+    @Override
+    protected String getDisplayName() {
+        return "Duplicated frames";
     }
 }

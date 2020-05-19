@@ -10,24 +10,29 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MultipleHomeFramesValidator<V extends MenuFrame> extends PropertiesBasedGraphValidator<V> {
+public class MultipleHomeFramesValidator<V extends MenuFrame, E extends DefaultEdge>
+        extends PropertiesBasedGraphValidator<V, E> {
 
-
-    public MultipleHomeFramesValidator(PropertiesParser propertiesParser) {
-        super(propertiesParser);
+    public MultipleHomeFramesValidator(Graph<V, E> graph, PropertiesParser propertiesParser) {
+        super(propertiesParser, graph);
     }
 
-    @Override
-    public Collection<GraphIssue> validate(Graph<V, DefaultEdge> graph) {
-        final int MAX_ALLOWED_HOME_FRAMES = 1;
-        List<String> homeFramesOccurrences = graph.vertexSet().stream()
+    protected List<String> getHomeFramesOccurrences() {
+        return graph.vertexSet().stream()
                 .filter(frame -> propertiesParser.parseProperties(frame.getProperties()).containsHome())
                 .map(MenuFrame::getName)
                 .collect(Collectors.toList());
+    }
 
-        if(homeFramesOccurrences.size() > MAX_ALLOWED_HOME_FRAMES) {
-            return Collections.singletonList(new GraphIssue("Multiple Home Frames", homeFramesOccurrences));
-        }
-        return Collections.emptyList();
+    @Override
+    protected Collection<String> findOccurrences() {
+        final int MAX_ALLOWED_HOME_FRAMES = 1;
+        List<String> homeFramesOccurrences = getHomeFramesOccurrences();
+        return homeFramesOccurrences.size() > MAX_ALLOWED_HOME_FRAMES ? homeFramesOccurrences : Collections.emptyList();
+    }
+
+    @Override
+    protected String getDisplayName() {
+        return "Multiple Home Frames";
     }
 }

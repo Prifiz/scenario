@@ -1,22 +1,17 @@
 package org.myhomeapps.walkers.validators;
 
-import java.util.List;
+import lombok.Getter;
 
+import java.util.Collection;
+
+@Getter
 public class GraphIssue {
 
     private String name;
-    private List<String> occurrences;
+    private Collection<String> occurrences;
 
-    public GraphIssue(String name, List<String> occurrences) {
+    public GraphIssue(String name, Collection<String> occurrences) {
         this.name = name;
         this.occurrences = occurrences;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<String> getOccurrences() {
-        return occurrences;
     }
 }

@@ -12,13 +12,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MenuItemsWithoutTextValidator<V extends MenuFrame> implements GraphValidator<V, DefaultEdge> {
+public class MenuItemsWithoutTextValidator<V extends MenuFrame, E extends DefaultEdge> extends AbstractValidator<V, E> {
+
+    public MenuItemsWithoutTextValidator(Graph<V, E> graph) {
+        super(graph);
+    }
 
     @Override
-    public Collection<GraphIssue> validate(Graph<V, DefaultEdge> graph) {
-
+    protected Collection<String> findOccurrences() {
         List<String> occurrences = new ArrayList<>();
-
         for(V frame : graph.vertexSet()) {
             if(frame.hasItems() && frame.isInputExpected()) {
                 List<String> noTextItems = frame.getItems().stream()
@@ -35,12 +37,11 @@ public class MenuItemsWithoutTextValidator<V extends MenuFrame> implements Graph
                 }
             }
         }
-
-        if(occurrences.isEmpty()) {
-            return Collections.emptyList();
-        } else {
-            return Collections.singletonList(new GraphIssue("Items With Empty Text", occurrences));
-        }
+        return occurrences;
     }
 
+    @Override
+    protected String getDisplayName() {
+        return "Items With Empty Text";
+    }
 }
