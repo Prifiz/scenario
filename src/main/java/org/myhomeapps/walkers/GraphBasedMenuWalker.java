@@ -5,7 +5,6 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.GraphIterator;
 import org.myhomeapps.adapters.CommandLineAdapter;
-import org.myhomeapps.config.ConfigParser;
 import org.myhomeapps.config.SimpleYamlParser;
 import org.myhomeapps.formatters.SimpleMenuFormatter;
 import org.myhomeapps.menuentities.MenuFrame;
@@ -30,15 +29,50 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
 
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
 
-    public GraphBasedMenuWalker() throws IOException {
-        ConfigParser parser = new SimpleYamlParser("menuSystem.yaml");
-        PropertiesParser propertiesParser = new DefaultPropertiesParser();
-
-        MenuSystem menuSystem = parser.parseMenuSystem();
-        menuGraph = (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder(menuSystem).buildFramesGraph();
+    public GraphBasedMenuWalker(String menuConfigPath) throws IOException {
+        this.menuGraph = buildGraph(menuConfigPath);
+        validateGraph(menuGraph);
 
 //        new SimpleGraphPainter<MenuFrame, DefaultEdge>().paint(menuGraph, "graph.png");
+    }
 
+    protected DefaultDirectedGraph<MenuFrame, DefaultEdge> buildGraph(String menuConfigPath) throws IOException {
+        MenuSystem menuSystem = new SimpleYamlParser(menuConfigPath).parseMenuSystem();
+        return (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder(menuSystem).buildFramesGraph();
+    }
+
+    protected void validateGraph(DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph)
+            throws MenuValidationException {
+        List<AbstractValidator<MenuFrame, DefaultEdge>> validators =
+                prepareValidators(new DefaultPropertiesParser(), menuGraph);
+        List<? extends GraphIssue> issues = doValidateGraph(validators);
+        processValidationResult(issues);
+    }
+
+    protected void processValidationResult(List<? extends GraphIssue> issues) throws MenuValidationException {
+        if(!issues.isEmpty()) {
+            throw new MenuValidationException(buildGraphIssuesReport(issues));
+        }
+    }
+
+    protected List<? extends GraphIssue> doValidateGraph(List<AbstractValidator<MenuFrame, DefaultEdge>> validators) {
+        return validators.stream()
+                .filter(validator -> !validator.validate().getOccurrences().isEmpty())
+                .map(AbstractValidator::validate)
+                .collect(Collectors.toList());
+    }
+
+    protected String buildGraphIssuesReport(List<? extends GraphIssue> issues) {
+        StringBuffer stringBuffer = new StringBuffer();
+        issues.forEach(graphIssue -> {
+            stringBuffer.append("\n" + graphIssue.getName() + ":\n");
+            graphIssue.getOccurrences().forEach(occurrence -> stringBuffer.append("\t" + occurrence + "\n"));
+        });
+        return stringBuffer.toString();
+    }
+
+    protected List<AbstractValidator<MenuFrame, DefaultEdge>> prepareValidators(
+            PropertiesParser propertiesParser, DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph) {
         List<AbstractValidator<MenuFrame, DefaultEdge>> validators = new ArrayList<>();
         validators.add(new DeadEndsValidator<>(menuGraph, propertiesParser));
         validators.add(new MultipleHomeFramesValidator<>(menuGraph, propertiesParser));
@@ -46,23 +80,10 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         validators.add(new FramesWithoutTextValidator<>(menuGraph));
         validators.add(new MenuItemsWithoutTextValidator<>(menuGraph));
         validators.add(new DuplicatedFramesValidator<>(menuGraph));
-
-        List<? extends GraphIssue> issues = validators.stream()
-                .filter(validator -> !validator.validate().getOccurrences().isEmpty())
-                .map(AbstractValidator::validate)
-                .collect(Collectors.toList());
-
-        issues.forEach(graphIssue -> {
-            System.out.println(graphIssue.getName() + ":");
-            graphIssue.getOccurrences().forEach(occurrence -> System.out.println("\t" + occurrence));
-        });
-
-        if (!issues.isEmpty()) {
-            System.exit(0);// FIXME not so hardcore exit needed here
-        }
+        return validators;
     }
 
-    private MenuFrame findHomeFrame(PropertiesParser propertiesParser) {
+    protected MenuFrame findHomeFrame(PropertiesParser propertiesParser) {
         return menuGraph.vertexSet().stream()
                 .filter(frame -> propertiesParser.parseProperties(frame.getProperties()).containsHome())
                 .findAny()
@@ -89,7 +110,7 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         }
     }
 
-    private AbstractInputRule parseRule(InputRule inputRule, Set<Class<?>> annotatedClasses) throws RuntimeException {
+    protected AbstractInputRule parseRule(InputRule inputRule, Set<Class<?>> annotatedClasses) throws RuntimeException {
 
         for (Class<?> clazz : annotatedClasses) {
             try {
@@ -110,7 +131,7 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         throw new RuntimeException("No such rule declared: " + inputRule.getRule());
     }
 
-    private void doRun(MenuFrame currentMenu, PropertiesParser propertiesParser) {
+    protected void doRun(MenuFrame currentMenu, PropertiesParser propertiesParser) {
         new FormattedMenuPrinter(new SimpleMenuFormatter(), System.out).print(currentMenu);
         Properties properties = propertiesParser.parseProperties(currentMenu.getProperties());
         if (properties.isInputExpected()) {

@@ -9,7 +9,7 @@ import java.io.IOException;
 public class Main  {
 
     public static void main(String[] args) throws IOException {
-        MenuWalker walker = new GraphBasedMenuWalker();
+        MenuWalker walker = new GraphBasedMenuWalker("menuSystem.yaml");
         walker.registerAdapter(new CalcAdapter());
         walker.run();
 
