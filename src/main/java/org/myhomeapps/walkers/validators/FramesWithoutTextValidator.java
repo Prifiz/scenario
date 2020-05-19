@@ -10,10 +10,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FramesWithoutTextValidator implements GraphValidator<MenuFrame, DefaultEdge> {
+public class FramesWithoutTextValidator<V extends MenuFrame> implements GraphValidator<V, DefaultEdge> {
 
     @Override
-    public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph) {
+    public Collection<GraphIssue> validate(Graph<V, DefaultEdge> graph) {
         List<String> occurrences = graph.vertexSet().stream()
                 .filter(MenuFrame::isInputExpected)
                 .filter(frame -> StringUtils.isBlank(frame.getText()))

@@ -8,8 +8,8 @@ import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.menuentities.MenuItem;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 
 public class PredefinedMenuOrderIterator<V extends MenuFrame, E> extends AbstractGraphIterator<V, E> {
@@ -43,59 +43,60 @@ public class PredefinedMenuOrderIterator<V extends MenuFrame, E> extends Abstrac
             return currentVertex;
         }
 
-        // TODO go through vertexSet and validate each transition before iterating graph
-        /* FIXME each frame (vertex) consists of items. it.next() should handle ITEM chosen by user!
-        e.g. home menu consists of add and exit. If user types "add",
-        the next vertex should be the one which is defined as goto in add item*/
         Set<? extends E> outgoingEdges = graph.outgoingEdgesOf(currentVertex);
         if (outgoingEdges.isEmpty()) {
             System.out.println("Dead end reached");
             return currentVertex;
         }
 
-        final String userInput = currentVertex.getUserInput();
-
         if (currentVertex.hasItems()) {
-            if (StringUtils.isBlank(userInput)) {
-                throw new IllegalStateException("Cannot choose next menu without user input");
-            }
-
-            MenuItem chosenItem;
-            try {
-                chosenItem = getChosenItem(userInput, currentVertex);
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-                return currentVertex;
-            }
-            for (E edge : outgoingEdges) {
-                V nextVertexCandidate = Graphs.getOppositeVertex(graph, edge, currentVertex);
-                if (nextVertexCandidate.getName().equals(chosenItem.getGotoMenu())) {
-                    fireEdgeTraversed(createEdgeTraversalEvent(edge));
-                    fireVertexTraversed(createVertexTraversalEvent(nextVertexCandidate));
-                    currentVertex = nextVertexCandidate;
-                    return nextVertexCandidate;
-                }
-            }
-            throw new IllegalStateException("Couldn't find next element among outgoing edges");
+            return nextByChosenItem(outgoingEdges);
         } else {
-            if (outgoingEdges.size() == 1) {
-                currentVertex = Graphs.getOppositeVertex(graph, outgoingEdges.iterator().next(), currentVertex);
-                return currentVertex;
-            } else {
-                throw new IllegalStateException("Single-item menu has more than one outgoing edge!");
-            }
+            return nextByPassedFrame(outgoingEdges);
         }
     }
 
-    private MenuItem getChosenItem(String userInput, V frame) throws IOException {
-        for (MenuItem item : frame.getItems()) {
-            if (item.getText().equalsIgnoreCase(userInput)) {
-                return item;
-            }
-            if (item.getInputAlternatives().stream().anyMatch(altInput -> altInput.equalsIgnoreCase(userInput))) {
-                return item;
+    protected V nextByChosenItem(Set<? extends E> outgoingEdges) {
+        final String userInput = currentVertex.getUserInput();
+        if (StringUtils.isBlank(userInput)) {
+            throw new IllegalStateException("Cannot choose next menu without user input");
+        }
+
+        Optional<MenuItem> possiblyChosenItem = getChosenItem(userInput, currentVertex);
+        if(possiblyChosenItem.isEmpty()) {
+            return currentVertex;
+        }
+
+        for (E edge : outgoingEdges) {
+            V nextVertexCandidate = Graphs.getOppositeVertex(graph, edge, currentVertex);
+            if (nextVertexCandidate.getName().equals(possiblyChosenItem.get().getGotoMenu())) {
+                fireEdgeTraversed(createEdgeTraversalEvent(edge));
+                fireVertexTraversed(createVertexTraversalEvent(nextVertexCandidate));
+                currentVertex = nextVertexCandidate;
+                return nextVertexCandidate;
             }
         }
-        throw new IOException("No item chosen");
+        throw new IllegalStateException("Couldn't find next element among outgoing edges");
+    }
+
+    protected V nextByPassedFrame(Set<? extends E> outgoingEdges) {
+        if (outgoingEdges.size() == 1) {
+            currentVertex = Graphs.getOppositeVertex(graph, outgoingEdges.iterator().next(), currentVertex);
+            return currentVertex;
+        } else {
+            throw new IllegalStateException("Single-item menu has more than one outgoing edge!");
+        }
+    }
+
+    protected Optional<MenuItem> getChosenItem(String userInput, V frame) {
+        for (MenuItem item : frame.getItems()) {
+            if (item.getText().equalsIgnoreCase(userInput)) {
+                return Optional.of(item);
+            }
+            if (item.getInputAlternatives().stream().anyMatch(altInput -> altInput.equalsIgnoreCase(userInput))) {
+                return Optional.of(item);
+            }
+        }
+        return Optional.empty();
     }
 }

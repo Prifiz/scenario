@@ -9,9 +9,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DuplicatedFramesValidator implements GraphValidator<MenuFrame, DefaultEdge> {
+public class DuplicatedFramesValidator<V extends MenuFrame> implements GraphValidator<V, DefaultEdge> {
     @Override
-    public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph) {
+    public Collection<GraphIssue> validate(Graph<V, DefaultEdge> graph) {
         List<String> framesNames = graph.vertexSet().stream()
                 .map(MenuFrame::getName)
                 .collect(Collectors.toList());

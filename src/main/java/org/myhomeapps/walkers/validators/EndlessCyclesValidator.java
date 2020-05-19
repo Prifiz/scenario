@@ -13,26 +13,26 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EndlessCyclesValidator extends PropertiesBasedGraphValidator {
+public class EndlessCyclesValidator<V extends MenuFrame> extends PropertiesBasedGraphValidator<V> {
 
     public EndlessCyclesValidator(PropertiesParser propertiesParser) {
         super(propertiesParser);
     }
 
     @Override
-    public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph) {
-        MenuFrame exitFrame = findExitFrame(graph);
-        List<MenuFrame> simplyLockedFrames = findFramesWithoutSimplePathsToExit(graph, exitFrame);
-        List<MenuFrame> lockedFramesInCycles = findCyclesFramesWithoutPathToExit(graph, exitFrame);
+    public Collection<GraphIssue> validate(Graph<V, DefaultEdge> graph) {
+        V exitFrame = findExitFrame(graph);
+        List<V> simplyLockedFrames = findFramesWithoutSimplePathsToExit(graph, exitFrame);
+        List<V> lockedFramesInCycles = findCyclesFramesWithoutPathToExit(graph, exitFrame);
 
-        Set<MenuFrame> lockedFrames = Stream.concat(
+        Set<V> lockedFrames = Stream.concat(
                 simplyLockedFrames.stream(),
                 lockedFramesInCycles.stream())
                 .collect(Collectors.toSet());
 
         List<String> occurrences = lockedFrames.stream()
                 .filter(frame -> !propertiesParser.parseProperties(frame.getProperties()).isExit())
-                .map(MenuFrame::getName)
+                .map(V::getName)
                 .collect(Collectors.toList());
 
         if(occurrences.isEmpty()) {
@@ -42,15 +42,15 @@ public class EndlessCyclesValidator extends PropertiesBasedGraphValidator {
         }
     }
 
-    private List<Set<MenuFrame>> findCycles(Graph<MenuFrame, DefaultEdge> graph) {
-        StrongConnectivityAlgorithm<MenuFrame, DefaultEdge> inspector =
+    private List<Set<V>> findCycles(Graph<V, DefaultEdge> graph) {
+        StrongConnectivityAlgorithm<V, DefaultEdge> inspector =
                 new KosarajuStrongConnectivityInspector<>(graph);
-        List<Set<MenuFrame>> cyclesFixed = new ArrayList<>();
+        List<Set<V>> cyclesFixed = new ArrayList<>();
 
-        for (Set<MenuFrame> component : inspector.stronglyConnectedSets()) {
-            MenuFrame frame = component.iterator().next();
+        for (Set<V> component : inspector.stronglyConnectedSets()) {
+            V frame = component.iterator().next();
             if (component.size() == 1 && graph.containsEdge(frame, frame)) {
-                Set<MenuFrame> singleFrameSet = new HashSet<>();
+                Set<V> singleFrameSet = new HashSet<>();
                 singleFrameSet.add(frame);
                 cyclesFixed.add(singleFrameSet);
             }
@@ -61,20 +61,19 @@ public class EndlessCyclesValidator extends PropertiesBasedGraphValidator {
         return cyclesFixed;
     }
 
-    private MenuFrame findExitFrame(Graph<MenuFrame, DefaultEdge> graph) {
-        for(MenuFrame frame : graph.vertexSet()) {
-            if(propertiesParser.parseProperties(frame.getProperties()).isExit()) {
-                return frame;
-            }
-        }
-        throw new IllegalStateException("Couldn't find exit frame");
+    private V findExitFrame(Graph<V, DefaultEdge> graph) {
+        return graph.vertexSet().stream()
+                .filter(frame -> propertiesParser.parseProperties(frame.getProperties()).isExit())
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("Couldn't find exit frame"));
     }
 
-    private List<MenuFrame> findFramesWithoutSimplePathsToExit(Graph<MenuFrame, DefaultEdge> graph, MenuFrame exitFrame) {
-        List<MenuFrame> result = new ArrayList<>();
-        AllDirectedPaths<MenuFrame, DefaultEdge> paths = new AllDirectedPaths<>(graph);
+    private List<V> findFramesWithoutSimplePathsToExit(Graph<V, DefaultEdge> graph, V exitFrame) {
+        List<V> result = new ArrayList<>();
+        AllDirectedPaths<V, DefaultEdge> paths = new AllDirectedPaths<>(graph);
         graph.vertexSet().forEach(frame -> {
-            List<GraphPath<MenuFrame, DefaultEdge>> routines = paths.getAllPaths(frame, exitFrame, true, null);
+            List<GraphPath<V, DefaultEdge>> routines =
+                    paths.getAllPaths(frame, exitFrame, true, null);
             if(routines.isEmpty()) {
                 System.out.println("No path to exit from frame: " + frame.getName());
                 result.add(frame);
@@ -83,13 +82,13 @@ public class EndlessCyclesValidator extends PropertiesBasedGraphValidator {
         return result;
     }
 
-    private List<MenuFrame> findCyclesFramesWithoutPathToExit(Graph<MenuFrame, DefaultEdge> graph, MenuFrame exitFrame) {
-        List<Set<MenuFrame>> cycles = findCycles(graph);
-        List<MenuFrame> result = new ArrayList<>();
-        AllDirectedPaths<MenuFrame, DefaultEdge> paths = new AllDirectedPaths<>(graph);
+    private List<V> findCyclesFramesWithoutPathToExit(Graph<V, DefaultEdge> graph, V exitFrame) {
+        List<Set<V>> cycles = findCycles(graph);
+        List<V> result = new ArrayList<>();
+        AllDirectedPaths<V, DefaultEdge> paths = new AllDirectedPaths<>(graph);
 
         cycles.forEach(cycle -> cycle.forEach(frame -> {
-            List<GraphPath<MenuFrame, DefaultEdge>> pathsToExit =
+            List<GraphPath<V, DefaultEdge>> pathsToExit =
                     paths.getAllPaths(frame, exitFrame, true, null);
             if(pathsToExit.isEmpty()) {
                 System.out.println("No path to exit from cycle frame: " + frame.getName());

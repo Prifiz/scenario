@@ -34,17 +34,17 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         PropertiesParser propertiesParser = new DefaultPropertiesParser();
 
         MenuSystem menuSystem = parser.parseMenuSystem();
-        menuGraph = (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder().buildFramesGraph(menuSystem);
+        menuGraph = (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder(menuSystem).buildFramesGraph();
 
 //        new SimpleGraphPainter<MenuFrame, DefaultEdge>().paint(menuGraph, "graph.png");
 
         List<GraphValidator<MenuFrame, DefaultEdge>> validators = new ArrayList<>();
-        validators.add(new DeadEndsValidator(propertiesParser));
-        validators.add(new MultipleHomeFramesValidator(propertiesParser));
-        validators.add(new EndlessCyclesValidator(propertiesParser));
-        validators.add(new FramesWithoutTextValidator());
-        validators.add(new MenuItemsWithoutTextValidator());
-        validators.add(new DuplicatedFramesValidator());
+        validators.add(new DeadEndsValidator<>(propertiesParser));
+        validators.add(new MultipleHomeFramesValidator<>(propertiesParser));
+        validators.add(new EndlessCyclesValidator<>(propertiesParser));
+        validators.add(new FramesWithoutTextValidator<>());
+        validators.add(new MenuItemsWithoutTextValidator<>());
+        validators.add(new DuplicatedFramesValidator<>());
 
         List<GraphIssue> issues = new ArrayList<>();
         validators.forEach(currentValidator -> issues.addAll(currentValidator.validate(menuGraph)));
@@ -96,7 +96,7 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
                 if (StringUtils.isNotBlank(inputRule.getErrorMessage())) {
                     ruleInstance = (AbstractInputRule) ruleConstructor.newInstance(inputRule.getErrorMessage());
                 } else {
-                    ruleInstance = (AbstractInputRule) clazz.newInstance();
+                    ruleInstance = (AbstractInputRule) ruleConstructor.newInstance();
                 }
                 if (ruleInstance.getRule().equals(inputRule.getRule())) {
                     return ruleInstance;

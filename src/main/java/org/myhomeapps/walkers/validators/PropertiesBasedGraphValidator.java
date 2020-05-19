@@ -4,7 +4,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.myhomeapps.menuentities.properties.PropertiesParser;
 import org.myhomeapps.menuentities.MenuFrame;
 
-public abstract class PropertiesBasedGraphValidator implements GraphValidator<MenuFrame, DefaultEdge> {
+public abstract class PropertiesBasedGraphValidator<V extends MenuFrame> implements GraphValidator<V, DefaultEdge> {
 
     protected PropertiesParser propertiesParser;
 

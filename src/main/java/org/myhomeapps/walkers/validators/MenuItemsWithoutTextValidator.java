@@ -12,14 +12,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MenuItemsWithoutTextValidator implements GraphValidator<MenuFrame, DefaultEdge> {
+public class MenuItemsWithoutTextValidator<V extends MenuFrame> implements GraphValidator<V, DefaultEdge> {
 
     @Override
-    public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph) {
+    public Collection<GraphIssue> validate(Graph<V, DefaultEdge> graph) {
 
         List<String> occurrences = new ArrayList<>();
 
-        for(MenuFrame frame : graph.vertexSet()) {
+        for(V frame : graph.vertexSet()) {
             if(frame.hasItems() && frame.isInputExpected()) {
                 List<String> noTextItems = frame.getItems().stream()
                         .filter(menuItem -> StringUtils.isBlank(menuItem.getText()))

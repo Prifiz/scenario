@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MultipleHomeFramesValidator extends PropertiesBasedGraphValidator {
+public class MultipleHomeFramesValidator<V extends MenuFrame> extends PropertiesBasedGraphValidator<V> {
 
 
     public MultipleHomeFramesValidator(PropertiesParser propertiesParser) {
@@ -18,7 +18,7 @@ public class MultipleHomeFramesValidator extends PropertiesBasedGraphValidator {
     }
 
     @Override
-    public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph) {
+    public Collection<GraphIssue> validate(Graph<V, DefaultEdge> graph) {
         final int MAX_ALLOWED_HOME_FRAMES = 1;
         List<String> homeFramesOccurrences = graph.vertexSet().stream()
                 .filter(frame -> propertiesParser.parseProperties(frame.getProperties()).containsHome())

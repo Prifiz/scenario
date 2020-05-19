@@ -9,7 +9,7 @@ import org.myhomeapps.menuentities.MenuFrame;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DeadEndsValidator extends PropertiesBasedGraphValidator {
+public class DeadEndsValidator<V extends MenuFrame> extends PropertiesBasedGraphValidator<V> {
 
     private int[][] adjacencyMatrix;
 
@@ -18,7 +18,7 @@ public class DeadEndsValidator extends PropertiesBasedGraphValidator {
     }
 
     @Override
-    public Collection<GraphIssue> validate(Graph<MenuFrame, DefaultEdge> graph) {
+    public Collection<GraphIssue> validate(Graph<V, DefaultEdge> graph) {
         this.adjacencyMatrix = buildAdjacencyMatrix(graph);
         //printAdjacencyMatrix();
 
@@ -44,15 +44,15 @@ public class DeadEndsValidator extends PropertiesBasedGraphValidator {
         }
     }
 
-    private int[][] buildAdjacencyMatrix(Graph<MenuFrame, DefaultEdge> graph) {
-        List<MenuFrame> vertices = new ArrayList<>(graph.vertexSet());
+    private int[][] buildAdjacencyMatrix(Graph<V, DefaultEdge> graph) {
+        List<V> vertices = new ArrayList<>(graph.vertexSet());
         int dimension = vertices.size();
         int[][] result = new int[dimension][dimension];
 
         for (int i = 0; i < dimension; i++) {
-            MenuFrame vi = vertices.get(i);
+            V vi = vertices.get(i);
             for (int j = 0; j < dimension; j++) {
-                MenuFrame vj = vertices.get(j);
+                V vj = vertices.get(j);
                 if (vi.equals(vj)) {
                     result[i][j] = 0;
                 } else {
@@ -68,8 +68,8 @@ public class DeadEndsValidator extends PropertiesBasedGraphValidator {
         return result;
     }
 
-    private List<MenuFrame> getDeadEndFrames(Graph<MenuFrame, DefaultEdge> graph) {
-        List<MenuFrame> vertices = new ArrayList<>(graph.vertexSet());
+    private List<V> getDeadEndFrames(Graph<V, DefaultEdge> graph) {
+        List<V> vertices = new ArrayList<>(graph.vertexSet());
         return getZerosLineIndices().stream()
                 .map(vertices::get)
                 .collect(Collectors.toList());
