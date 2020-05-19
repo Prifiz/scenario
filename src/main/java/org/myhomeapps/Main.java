@@ -17,9 +17,9 @@ public class Main  {
         /*  v 1.0 Definition Of Done:
             *
             * [>] unit tests
-            * [ ] CI
-            * [ ] logger
-            * [>] lombok
+            * [>] CI
+            * [>] logger
+            * [x] lombok
             *
             * [x] yaml macros (@exitItem, etc.)
             * [x] more than one home item finder

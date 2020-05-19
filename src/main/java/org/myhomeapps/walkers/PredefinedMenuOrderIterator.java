@@ -1,5 +1,6 @@
 package org.myhomeapps.walkers;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
@@ -7,7 +8,6 @@ import org.jgrapht.traverse.AbstractGraphIterator;
 import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.menuentities.MenuItem;
 
-import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -17,7 +17,7 @@ public class PredefinedMenuOrderIterator<V extends MenuFrame, E> extends Abstrac
     private V currentVertex;
     private boolean startVertexVisited = false;
 
-    public PredefinedMenuOrderIterator(@Nonnull Graph<V, E> graph, @Nonnull V startVertex) {
+    public PredefinedMenuOrderIterator(@NonNull Graph<V, E> graph, @NonNull V startVertex) {
         super(graph);
         this.crossComponentTraversal = false;
         if (graph.containsVertex(startVertex)) {

@@ -1,6 +1,12 @@
 package org.myhomeapps.menuentities.input;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public abstract class AbstractInputRule extends InputRule {
+
+    private static final Logger logger = LogManager.getLogger(AbstractInputRule.class);
+
     public AbstractInputRule(String rule, String errorMessage) {
         super(rule, errorMessage);
     }
@@ -16,7 +22,7 @@ public abstract class AbstractInputRule extends InputRule {
         if(isPassed(input)) {
             return true;
         } else {
-            System.out.println(getErrorMessage());
+            logger.error(getErrorMessage());
             return false;
         }
     }

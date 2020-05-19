@@ -1,7 +1,14 @@
 package org.myhomeapps.menuentities.input;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @InputCheckingRule
 public class IsNumber extends AbstractInputRule {
+
+    Logger logger = LogManager.getLogger(IsNumber.class);
+
+    protected static final String INCORRECT_INPUT_MSG = "Couldn't parse input";
 
     public IsNumber() {
         super("@IsNumber", "Not a number");
@@ -17,8 +24,8 @@ public class IsNumber extends AbstractInputRule {
             Integer.parseInt(input);
             return true;
         } catch (NumberFormatException ex) {
-            System.out.println("Couldn't parse input");
-            System.out.println(ex.getMessage());
+            logger.error(INCORRECT_INPUT_MSG);
+            logger.error(ex.getMessage());
             return false;
         }
     }
