@@ -81,6 +81,7 @@ public class MenuFrameTest {
             menuFrame.isItemLevelGotoDefined();
             result = false;
         }};
+        menuFrame.setGotoMenu("");
         menuFrame.getGotoLevel();
     }
 
