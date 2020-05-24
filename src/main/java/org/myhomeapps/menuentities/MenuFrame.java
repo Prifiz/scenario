@@ -2,9 +2,12 @@ package org.myhomeapps.menuentities;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.myhomeapps.menuentities.input.InputRule;
 import org.myhomeapps.menuentities.properties.DefaultPropertiesParser;
+import org.myhomeapps.walkers.graphbuilders.GotoLevel;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -93,6 +96,29 @@ public class MenuFrame extends Observable {
 
     public boolean isInputExpected() {
         return new DefaultPropertiesParser().parseProperties(properties).isInputExpected();
+    }
+
+    public GotoLevel getGotoLevel() throws IOException {
+        if (isItemLevelGotoDefined()) {
+            return GotoLevel.ITEM;
+        }
+        if (StringUtils.isNotBlank(getGotoMenu())) {
+            return GotoLevel.MENU;
+        }
+        throw new IOException(
+                "Goto not defined neither on item nor on menu level of frame: [" + getName() + "]");
+    }
+
+    boolean isItemLevelGotoDefined() {
+        if (getItems() == null || getItems().isEmpty()) {
+            return false;
+        }
+        for (MenuItem item : getItems()) {
+            if (StringUtils.isBlank(item.getGotoMenu())) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
