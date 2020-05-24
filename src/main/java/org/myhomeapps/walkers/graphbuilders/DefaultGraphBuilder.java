@@ -35,7 +35,7 @@ public class DefaultGraphBuilder implements GraphBuilder {
     }
 
     protected void addEdges(MenuFrame sourceCandidate) throws IOException {
-        GotoLevel gotoLevel = new GotoLevelFactory(sourceCandidate).defineLevel();
+        GotoLevel gotoLevel = sourceCandidate.getGotoLevel();
         switch (gotoLevel) {
             case ITEM: {
                 addItemBasedEdges(sourceCandidate);
