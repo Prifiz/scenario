@@ -27,15 +27,37 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
                 <configuration>
                     <argLine>
                         -javaagent:"${settings.localRepository}"/org/jmockit/jmockit/${jmockit.version}/jmockit-${jmockit.version}.jar
+
+                        <!-- Coverage properties -->
+                        <!-- At least one of the following needs to be set: -->
+                        -Dcoverage-output=html             <!-- or html-cp, serial, serial-append; if not set, defaults to "html" -->
+                              <!-- or a "*" expression for class names; if not set, measures all production code classes -->
+
+
                     </argLine>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.5</version>
+                <executions>
+                    <execution>
+                        <id>report-generate</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
 
     <dependencies>
         <dependency>
@@ -97,7 +119,6 @@
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
             <version>${jmockit.version}</version>
-            <scope>test</scope>
         </dependency>
 
 

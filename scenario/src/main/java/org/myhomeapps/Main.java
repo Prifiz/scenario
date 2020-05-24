@@ -1,6 +1,6 @@
 //package org.myhomeapps;
 //
-//import org.myhomeapps.adapters.CalcAdapter;
+//import simplecalculator.CalcAdapter;
 //import org.myhomeapps.walkers.GraphBasedMenuWalker;
 //import org.myhomeapps.walkers.MenuWalker;
 //

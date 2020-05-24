@@ -1,4 +1,4 @@
-package org.myhomeapps.testlogic;
+package simplecalculator;
 
 public class Calc {
 
