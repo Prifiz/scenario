@@ -140,8 +140,9 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
     }
 
     @Override
-    public void registerAdapter(CommandLineAdapter adapter) {
+    public MenuWalker registerAdapter(CommandLineAdapter adapter) {
         menuGraph.vertexSet().forEach(frame -> frame.addObserver(adapter));
+        return this;
     }
 
     // TODO custom input control
