@@ -1,12 +1,11 @@
 package org.myhomeapps.menuentities.properties;
 
 import mockit.Tested;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class DefaultPropertiesParserTest {
@@ -41,17 +40,18 @@ public class DefaultPropertiesParserTest {
 
     @Test
     public void parseNullPropertiesTest(){
-        Assert.assertEquals(new Properties(Collections.EMPTY_LIST),parser.parseProperties(null));
+        Assert.assertEquals(new Properties(new ArrayList<>()),parser.parseProperties(null));
     }
 
 
     @Test
     public void parsePropertiesTest(){
         final String incorrectPropertyText = "testProperty";
-        Properties actualProperties = parser.parseProperties(new ArrayList<>(Arrays.asList(" exit","home  ",incorrectPropertyText)));
+        Properties actualProperties = parser.parseProperties(new ArrayList<>(Arrays.asList(" exit","home  ",incorrectPropertyText,"noInput")));
         List<Property> propObjs = new ArrayList<>();
         propObjs.add(new ExitProperty());
         propObjs.add(new HomeProperty());
+        propObjs.add(new NoInputExpectedProperty());
         propObjs.add(new UnknownProperty(incorrectPropertyText));
         Properties expectedProperties = new Properties(propObjs);
         Assert.assertEquals(actualProperties, expectedProperties);

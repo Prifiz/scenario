@@ -4,10 +4,9 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Tested;
+import org.junit.Assert;
+import org.junit.Test;
 import org.myhomeapps.walkers.graphbuilders.GotoLevel;
-import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,7 +72,7 @@ public class MenuFrameTest {
         Assert.assertEquals(actual, GotoLevel.MENU);
     }
 
-    @Test(expectedExceptions = IOException.class)
+    @Test(expected = IOException.class)
     public void gotoNotDefineTest() throws IOException {
         new Expectations(menuFrame) {{
             menuFrame.isItemLevelGotoDefined();
