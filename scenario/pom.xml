@@ -2,18 +2,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>ScenarioAggregator</artifactId>
-        <groupId>org.myhomeapps</groupId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>org.myhomeapps</groupId>
     <artifactId>scenario</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
     <properties>
         <jmockit.version>1.48</jmockit.version>
     </properties>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>test</id>
+            <url>file:///C:\.m2\test-deploy-repo</url><!--FIXME-->
+        </snapshotRepository>
+    </distributionManagement>
 
     <build>
         <plugins>
@@ -35,8 +39,6 @@
                         <!-- At least one of the following needs to be set: -->
                         -Dcoverage-output=html             <!-- or html-cp, serial, serial-append; if not set, defaults to "html" -->
                               <!-- or a "*" expression for class names; if not set, measures all production code classes -->
-
-
                     </argLine>
                 </configuration>
             </plugin>
@@ -120,8 +122,6 @@
             <artifactId>jmockit</artifactId>
             <version>${jmockit.version}</version>
         </dependency>
-
-
     </dependencies>
 
 </project>
