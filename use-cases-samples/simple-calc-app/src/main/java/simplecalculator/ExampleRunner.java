@@ -12,7 +12,8 @@ public class ExampleRunner {
         InputStream inputStream = this.getClass().getResourceAsStream("calculatorMenu.yml");
         InputAsker inputAsker = new InputAsker(System.in, System.out);
         new GraphBasedMenuWalker(inputStream, inputAsker)
-                .registerAdapter(new CalcAdapter())
+                .registerAdapter(new AdditionAdapter())
+                .registerAdapter(new DivisionAdapter())
                 .run();
     }
 }

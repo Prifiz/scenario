@@ -4,17 +4,37 @@ menuSystem:
     properties:
       - home
     text: |
-          Welcome to home menu.
-          Please choose action:
+          Welcome to calculator.
+          Please choose the operation:
     items:
        - name: "add"
          text: "Add"
          gotoMenu: "addFirst"
 
+       - name: "divide"
+         text: "Divide"
+         gotoMenu: "divFirst"
+
        - name: "exit"
          text: "Exit"
          gotoMenu: "exitWithConfirm"
-         #inbuilt: "@exit"
+
+  # Divide First Number Input
+  - name: "divFirst"
+    text: "Enter first value:"
+    gotoMenu: "divSecond"
+    inputRules:
+      - { rule: "@IsNumber", errorMessage: "First value should be a number" }
+    field: "divFirst"
+
+  # Divide Second Number Input
+  - name: "divSecond"
+    text: "Enter second value:"
+    field: "divSecond"
+    method: "divide"
+    gotoMenu: "home"
+    inputRules:
+      - { rule: "@IsNumber", errorMessage: "First value should be a number" }
 
  # Add First Number Input
   - name: "addFirst"
@@ -29,7 +49,9 @@ menuSystem:
     text: "Enter second value:"
     field: "addSecond"
     method: "add"
-    gotoMenu: "exitWithConfirm"
+    gotoMenu: "home"
+    inputRules:
+      - { rule: "@IsNumber", errorMessage: "First value should be a number" }
 
 # Exit Menu
   - name: "exitMenu"
@@ -37,36 +59,19 @@ menuSystem:
       - exit
       - noInput
     text: "Bye"
-    #gotoMenu: "123"
-
-# gotoLeadsToNonExistingItem validation
 
   - name: "exitWithConfirm"
-#    useTemplate:
-#      name: "yesNoMenuTemplate"
-#      params:
-#        - yesGoto: "exitMenu"
-#        - noGoto: "home"
-    text: "Are you sure?"
+    text: "Do you want to exit?"
     items:
       - name: "y"
         text: "Yes"
         inputAlternatives:
           - "y"
           - "yes"
-          - "true"
-          - "+"
-          - "++"
-          - "OK"
-          - "die"
         gotoMenu: "exitMenu"
       - name: "n"
         text: "No"
         inputAlternatives:
           - "n"
           - "no"
-          - "false"
-          - "-"
-          - "--"
-          - "nope"
         gotoMenu: "home"
