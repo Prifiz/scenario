@@ -12,4 +12,11 @@ public class HomeProperty implements Property {
         homeValues.add("kudo");
         return homeValues;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return true;
+    }
 }
