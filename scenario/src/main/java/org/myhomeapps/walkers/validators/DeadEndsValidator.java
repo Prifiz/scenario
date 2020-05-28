@@ -71,7 +71,7 @@ public class DeadEndsValidator<V extends MenuFrame, E extends DefaultEdge> exten
                 .collect(Collectors.toList());
     }
 
-    private List<Integer> getZerosLineIndices() {
+    List<Integer> getZerosLineIndices() {
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < adjacencyMatrix.length; i++) {
             if (isZeroLine(adjacencyMatrix[i])) {
