@@ -5,7 +5,6 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.GraphIterator;
 import org.myhomeapps.adapters.CommandLineAdapter;
-import org.myhomeapps.config.SimpleYamlParser;
 import org.myhomeapps.formatters.SimpleMenuFormatter;
 import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.menuentities.MenuSystem;
@@ -15,29 +14,47 @@ import org.myhomeapps.menuentities.input.InputRule;
 import org.myhomeapps.menuentities.properties.DefaultPropertiesParser;
 import org.myhomeapps.menuentities.properties.Properties;
 import org.myhomeapps.menuentities.properties.PropertiesParser;
-import org.myhomeapps.printers.FormattedMenuPrinter;
 import org.myhomeapps.walkers.graphbuilders.DefaultGraphBuilder;
 import org.myhomeapps.walkers.validators.*;
 import org.reflections.Reflections;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class GraphBasedMenuWalker extends Observable implements MenuWalker {
 
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
+    private InputAsker inputAsker;
 
-    public GraphBasedMenuWalker(String menuConfigPath) throws IOException {
-        this.menuGraph = buildGraph(menuConfigPath);
+    public GraphBasedMenuWalker(String yamlConfig) throws IOException {
+        this.menuGraph = buildGraph(yamlConfig);
         validateGraph(menuGraph);
 
 //        new SimpleGraphPainter<MenuFrame, DefaultEdge>().paint(menuGraph, "graph.png");
     }
 
-    protected DefaultDirectedGraph<MenuFrame, DefaultEdge> buildGraph(String menuConfigPath) throws IOException {
-        MenuSystem menuSystem = new SimpleYamlParser(menuConfigPath).parseMenuSystem();
+    public GraphBasedMenuWalker(InputStream menuConfigInputStream, InputAsker inputAsker) throws IOException {
+        this.inputAsker = inputAsker;
+        this.menuGraph = buildGraph(menuConfigInputStream);
+        validateGraph(menuGraph);
+
+//        new SimpleGraphPainter<MenuFrame, DefaultEdge>().paint(menuGraph, "graph.png");
+    }
+
+    DefaultDirectedGraph<MenuFrame, DefaultEdge> buildGraph(InputStream menuConfigInputStream) {
+        MenuSystem menuSystem = new Yaml().loadAs(menuConfigInputStream, MenuSystem.class);
+        return (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder(menuSystem).buildFramesGraph();
+    }
+
+    protected DefaultDirectedGraph<MenuFrame, DefaultEdge> buildGraph(String configContent) {
+        MenuSystem menuSystem = new Yaml().loadAs(configContent, MenuSystem.class);
         return (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder(menuSystem).buildFramesGraph();
     }
 
@@ -132,10 +149,12 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
     }
 
     protected void doRun(MenuFrame currentMenu, PropertiesParser propertiesParser) {
-        new FormattedMenuPrinter(new SimpleMenuFormatter(), System.out).print(currentMenu);
+        //new FormattedMenuPrinter(new SimpleMenuFormatter(), System.out).print(currentMenu);
         Properties properties = propertiesParser.parseProperties(currentMenu.getProperties());
         if (properties.isInputExpected()) {
-            currentMenu.setUserInput(new Scanner(System.in).nextLine());
+            currentMenu.setUserInput(
+                    inputAsker.ask(
+                            new SimpleMenuFormatter().format(currentMenu)));
         }
     }
 

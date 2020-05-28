@@ -1,8 +1,8 @@
-package org.myhomeapps.adapters;
+package simplecalculator;
 
-import org.myhomeapps.testlogic.Calc;
+import org.myhomeapps.adapters.CommandLineAdapter;
 
-public class CalcAdapter extends CommandLineAdapter  {
+public class CalcAdapter extends CommandLineAdapter {
 
     private String addFirst;
     private String addSecond;
