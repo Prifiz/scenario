@@ -1,30 +1,43 @@
 package org.myhomeapps.walkers;
 
+import lombok.Getter;
 import lombok.NonNull;
-import org.apache.commons.lang3.StringUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.traverse.AbstractGraphIterator;
 import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.menuentities.MenuItem;
+import org.myhomeapps.menuentities.input.ItemChooser;
+import org.myhomeapps.menuentities.input.ItemChooserWithAlternatives;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
 public class PredefinedMenuOrderIterator<V extends MenuFrame, E> extends AbstractGraphIterator<V, E> {
 
+    @Getter
     private V currentVertex;
+    @Getter
     private boolean startVertexVisited = false;
+
+    private ItemChooser itemChooser;
+
+    static final String NOT_MY_START_VERTEX_MSG = "Start vertex doesn't belong to traversed graph";
 
     public PredefinedMenuOrderIterator(@NonNull Graph<V, E> graph, @NonNull V startVertex) {
         super(graph);
+        this.itemChooser = new ItemChooserWithAlternatives();
         this.crossComponentTraversal = false;
         if (graph.containsVertex(startVertex)) {
             this.currentVertex = startVertex;
         } else {
-            throw new IllegalArgumentException("Start vertex doesn't belong to traversed graph");
+            throw new IllegalArgumentException(NOT_MY_START_VERTEX_MSG);
         }
+    }
+
+    public PredefinedMenuOrderIterator<V, E> withCustomItemChooser(ItemChooser itemChooser) {
+        this.itemChooser = itemChooser;
+        return this;
     }
 
     @Override
@@ -34,10 +47,6 @@ public class PredefinedMenuOrderIterator<V extends MenuFrame, E> extends Abstrac
 
     @Override
     public V next() {
-        if (!hasNext()) {
-            throw new NoSuchElementException();
-        }
-
         if (!startVertexVisited) {
             startVertexVisited = true;
             return currentVertex;
@@ -45,29 +54,29 @@ public class PredefinedMenuOrderIterator<V extends MenuFrame, E> extends Abstrac
 
         Set<? extends E> outgoingEdges = graph.outgoingEdgesOf(currentVertex);
         if (outgoingEdges.isEmpty()) {
-            System.out.println("Dead end reached");
+            System.out.println("End reached");
             return currentVertex;
         }
+// Maybe will be never needed
+//        if (outgoingEdges.size() > 1) {
+//            throw new IllegalStateException(
+//                    "Single-item menu has more than one outgoing edge. Check frame: " + currentVertex.getName());
+//        }
 
         if (currentVertex.hasItems()) {
             return nextByChosenItem(outgoingEdges);
         } else {
-            return nextByPassedFrame(outgoingEdges);
+            return currentVertex = Graphs.getOppositeVertex(graph, outgoingEdges.iterator().next(), currentVertex);
         }
     }
 
-    protected V nextByChosenItem(Set<? extends E> outgoingEdges) {
-        final String userInput = currentVertex.getUserInput();
-        if (StringUtils.isBlank(userInput)) {
-            throw new IllegalStateException("Cannot choose next menu without user input");
-        }
-
-        Optional<MenuItem> possiblyChosenItem = getChosenItem(userInput, currentVertex);
+    V nextByChosenItem(Set<? extends E> currentVertexOutgoingEdges) {
+        Optional<MenuItem> possiblyChosenItem = Optional.ofNullable(itemChooser.chooseItem(currentVertex));
         if(possiblyChosenItem.isEmpty()) {
-            return currentVertex;
+            return currentVertex;// repeat prompt of user input
         }
 
-        for (E edge : outgoingEdges) {
+        for (E edge : currentVertexOutgoingEdges) {
             V nextVertexCandidate = Graphs.getOppositeVertex(graph, edge, currentVertex);
             if (nextVertexCandidate.getName().equals(possiblyChosenItem.get().getGotoMenu())) {
                 fireEdgeTraversed(createEdgeTraversalEvent(edge));
@@ -77,26 +86,5 @@ public class PredefinedMenuOrderIterator<V extends MenuFrame, E> extends Abstrac
             }
         }
         throw new IllegalStateException("Couldn't find next element among outgoing edges");
-    }
-
-    protected V nextByPassedFrame(Set<? extends E> outgoingEdges) {
-        if (outgoingEdges.size() == 1) {
-            currentVertex = Graphs.getOppositeVertex(graph, outgoingEdges.iterator().next(), currentVertex);
-            return currentVertex;
-        } else {
-            throw new IllegalStateException("Single-item menu has more than one outgoing edge!");
-        }
-    }
-
-    protected Optional<MenuItem> getChosenItem(String userInput, V frame) {
-        for (MenuItem item : frame.getItems()) {
-            if (item.getText().equalsIgnoreCase(userInput)) {
-                return Optional.of(item);
-            }
-            if (item.getInputAlternatives().stream().anyMatch(altInput -> altInput.equalsIgnoreCase(userInput))) {
-                return Optional.of(item);
-            }
-        }
-        return Optional.empty();
     }
 }

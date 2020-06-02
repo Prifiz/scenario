@@ -39,6 +39,11 @@ public class MenuFrame extends Observable {
     public MenuFrame() {
     }
 
+    // for unit testing
+    public MenuFrame(String name) {
+        this.name = name;
+    }
+
     public MenuFrame bindMethod(String bindMethod) {
         this.method = bindMethod;
         return this;

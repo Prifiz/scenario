@@ -24,6 +24,26 @@ public class MenuItem {
         this.gotoMenu = gotoMenu;
     }
 
+    public MenuItem withName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public MenuItem goTo(String gotoMenu) {
+        this.gotoMenu = gotoMenu;
+        return this;
+    }
+
+    public MenuItem withText(String text) {
+        this.text = text;
+        return this;
+    }
+
+    public MenuItem addInputAlternative(String inputAlternative) {
+        this.inputAlternatives.add(inputAlternative);
+        return this;
+    }
+
     public MenuItem() {
     }
 
