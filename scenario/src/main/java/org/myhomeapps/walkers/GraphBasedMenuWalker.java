@@ -53,12 +53,12 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         return (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder(menuSystem).buildFramesGraph();
     }
 
-    protected DefaultDirectedGraph<MenuFrame, DefaultEdge> buildGraph(String configContent) {
+    DefaultDirectedGraph<MenuFrame, DefaultEdge> buildGraph(String configContent) {
         MenuSystem menuSystem = new Yaml().loadAs(configContent, MenuSystem.class);
         return (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder(menuSystem).buildFramesGraph();
     }
 
-    protected void validateGraph(DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph)
+    void validateGraph(DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph)
             throws MenuValidationException {
         List<AbstractValidator<MenuFrame, DefaultEdge>> validators =
                 prepareValidators(new DefaultPropertiesParser(), menuGraph);
@@ -66,20 +66,20 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         processValidationResult(issues);
     }
 
-    protected void processValidationResult(List<? extends GraphIssue> issues) throws MenuValidationException {
+    void processValidationResult(List<? extends GraphIssue> issues) throws MenuValidationException {
         if(!issues.isEmpty()) {
             throw new MenuValidationException(buildGraphIssuesReport(issues));
         }
     }
 
-    protected List<? extends GraphIssue> doValidateGraph(List<AbstractValidator<MenuFrame, DefaultEdge>> validators) {
+    List<? extends GraphIssue> doValidateGraph(List<AbstractValidator<MenuFrame, DefaultEdge>> validators) {
         return validators.stream()
                 .filter(validator -> !validator.validate().getOccurrences().isEmpty())
                 .map(AbstractValidator::validate)
                 .collect(Collectors.toList());
     }
 
-    protected String buildGraphIssuesReport(List<? extends GraphIssue> issues) {
+    String buildGraphIssuesReport(List<? extends GraphIssue> issues) {
         StringBuffer stringBuffer = new StringBuffer();
         issues.forEach(graphIssue -> {
             stringBuffer.append("\n" + graphIssue.getName() + ":\n");
@@ -88,7 +88,7 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         return stringBuffer.toString();
     }
 
-    protected List<AbstractValidator<MenuFrame, DefaultEdge>> prepareValidators(
+    List<AbstractValidator<MenuFrame, DefaultEdge>> prepareValidators(
             PropertiesParser propertiesParser, DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph) {
         List<AbstractValidator<MenuFrame, DefaultEdge>> validators = new ArrayList<>();
         validators.add(new DeadEndsValidator<>(menuGraph, propertiesParser));
@@ -100,7 +100,7 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         return validators;
     }
 
-    protected MenuFrame findHomeFrame(PropertiesParser propertiesParser) {
+    MenuFrame findHomeFrame(PropertiesParser propertiesParser) {
         return menuGraph.vertexSet().stream()
                 .filter(frame -> propertiesParser.parseProperties(frame.getProperties()).containsHome())
                 .findAny()
@@ -127,7 +127,7 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         }
     }
 
-    protected AbstractInputRule parseRule(InputRule inputRule, Set<Class<?>> annotatedClasses) throws RuntimeException {
+    AbstractInputRule parseRule(InputRule inputRule, Set<Class<?>> annotatedClasses) throws RuntimeException {
 
         for (Class<?> clazz : annotatedClasses) {
             try {
@@ -148,7 +148,7 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         throw new RuntimeException("No such rule declared: " + inputRule.getRule());
     }
 
-    protected void doRun(MenuFrame currentMenu, PropertiesParser propertiesParser) {
+    void doRun(MenuFrame currentMenu, PropertiesParser propertiesParser) {
         //new FormattedMenuPrinter(new SimpleMenuFormatter(), System.out).print(currentMenu);
         Properties properties = propertiesParser.parseProperties(currentMenu.getProperties());
         if (properties.isInputExpected()) {

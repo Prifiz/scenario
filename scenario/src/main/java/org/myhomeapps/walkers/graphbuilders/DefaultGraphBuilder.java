@@ -9,10 +9,10 @@ import org.myhomeapps.menuentities.MenuSystem;
 
 import java.io.IOException;
 
+@Getter
 public class DefaultGraphBuilder implements GraphBuilder {
 
     private MenuSystem menuSystem;
-    @Getter
     private DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
 
     public DefaultGraphBuilder(MenuSystem menuSystem) {
@@ -34,7 +34,7 @@ public class DefaultGraphBuilder implements GraphBuilder {
         return menuGraph;
     }
 
-    protected void addEdges(MenuFrame sourceCandidate) throws IOException {
+    void addEdges(MenuFrame sourceCandidate) throws IOException {
         GotoLevel gotoLevel = sourceCandidate.getGotoLevel();
         switch (gotoLevel) {
             case ITEM: {
@@ -51,7 +51,7 @@ public class DefaultGraphBuilder implements GraphBuilder {
         }
     }
 
-    protected void addItemBasedEdges(MenuFrame sourceCandidate) {
+    void addItemBasedEdges(MenuFrame sourceCandidate) {
         sourceCandidate.getItems().forEach(menuItem -> {
             String itemGotoMenu = menuItem.getGotoMenu();
             menuSystem.getMenuSystem().forEach(targetCandidate -> {
@@ -63,7 +63,7 @@ public class DefaultGraphBuilder implements GraphBuilder {
         });
     }
 
-    protected void addMenuBasedEdges(MenuFrame sourceCandidate) {
+    void addMenuBasedEdges(MenuFrame sourceCandidate) {
         String gotoMenu = sourceCandidate.getGotoMenu();
         menuGraph.vertexSet().forEach(targetCandidate -> {
             String name = targetCandidate.getName();

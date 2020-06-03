@@ -17,7 +17,7 @@
 //        /*  v 1.0 Definition Of Done:
 //            *
 //            * [>] unit tests
-//            * [>] CI
+//            * [x] CI
 //            * [>] logger
 //            * [x] lombok
 //            *

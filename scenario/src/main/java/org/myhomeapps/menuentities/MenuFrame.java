@@ -119,11 +119,11 @@ public class MenuFrame extends Observable {
             return false;
         }
         for (MenuItem item : getItems()) {
-            if (StringUtils.isBlank(item.getGotoMenu())) {
-                return false;
+            if (StringUtils.isNotBlank(item.getGotoMenu())) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
 }
