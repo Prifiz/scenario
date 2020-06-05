@@ -12,8 +12,8 @@ import java.io.IOException;
 @Getter
 public class DefaultGraphBuilder implements GraphBuilder {
 
-    private MenuSystem menuSystem;
-    private DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
+    private final MenuSystem menuSystem;
+    private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
 
     public DefaultGraphBuilder(MenuSystem menuSystem) {
         this.menuSystem = menuSystem;
@@ -21,7 +21,7 @@ public class DefaultGraphBuilder implements GraphBuilder {
     }
 
     public Graph<MenuFrame, DefaultEdge> buildFramesGraph() {
-        menuSystem.getMenuSystem().forEach(frame -> menuGraph.addVertex(frame));
+        menuSystem.getMenuSystem().forEach(menuGraph::addVertex);
 
         menuGraph.vertexSet().forEach(sourceCandidate -> {
             try {

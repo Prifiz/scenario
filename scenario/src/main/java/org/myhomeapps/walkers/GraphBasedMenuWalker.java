@@ -3,9 +3,9 @@ package org.myhomeapps.walkers;
 import org.apache.commons.lang3.StringUtils;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.traverse.GraphIterator;
 import org.myhomeapps.adapters.CommandLineAdapter;
 import org.myhomeapps.formatters.SimpleMenuFormatter;
+import org.myhomeapps.menuentities.Bindings;
 import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.menuentities.MenuSystem;
 import org.myhomeapps.menuentities.input.AbstractInputRule;
@@ -23,29 +23,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Observable;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class GraphBasedMenuWalker extends Observable implements MenuWalker {
+public final class GraphBasedMenuWalker implements MenuWalker {
 
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
     private InputAsker inputAsker;
+    private Set<CommandLineAdapter> adapters = new HashSet<>();
 
     public GraphBasedMenuWalker(String yamlConfig) throws IOException {
+        super();
         this.menuGraph = buildGraph(yamlConfig);
         validateGraph(menuGraph);
-
-//        new SimpleGraphPainter<MenuFrame, DefaultEdge>().paint(menuGraph, "graph.png");
     }
 
     public GraphBasedMenuWalker(InputStream menuConfigInputStream, InputAsker inputAsker) throws IOException {
         this.inputAsker = inputAsker;
         this.menuGraph = buildGraph(menuConfigInputStream);
         validateGraph(menuGraph);
-
-//        new SimpleGraphPainter<MenuFrame, DefaultEdge>().paint(menuGraph, "graph.png");
     }
 
     DefaultDirectedGraph<MenuFrame, DefaultEdge> buildGraph(InputStream menuConfigInputStream) {
@@ -111,20 +109,33 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
     public void run() {
         PropertiesParser propertiesParser = new DefaultPropertiesParser();
         MenuFrame homeFrame = findHomeFrame(propertiesParser);
-        GraphIterator<MenuFrame, DefaultEdge> graphIterator = new PredefinedMenuOrderIterator<>(menuGraph, homeFrame);
 
+        PredefinedMenuOrderIterator<MenuFrame, DefaultEdge> graphIterator =
+                new PredefinedMenuOrderIterator<>(menuGraph, homeFrame);
         Reflections reflections = new Reflections("org.myhomeapps");
         Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(InputCheckingRule.class);
 
+        String userInput = "";
         while (graphIterator.hasNext()) {
-            MenuFrame currentMenu = graphIterator.next();
-            doRun(currentMenu, propertiesParser);
-            while (currentMenu.getInputRules().stream()
-                    .map(inputRule -> parseRule(inputRule, annotatedClasses))
-                    .anyMatch(rule -> !rule.checkRule(currentMenu.getUserInput()))) {
-                doRun(currentMenu, propertiesParser);
-            }
+            MenuFrame currentMenu = graphIterator.next(userInput);
+            do {
+                userInput = askForInput(currentMenu, propertiesParser);
+            } while (userInput != null && !isInputCorrect(currentMenu, annotatedClasses, userInput));
+            bindAdapters(currentMenu.getBindings(), userInput);
         }
+    }
+
+    void bindAdapters(Bindings bindings, String userInput) {
+        adapters.forEach(commandLineAdapter -> commandLineAdapter.bind(bindings, userInput));
+    }
+
+    boolean isInputCorrect(MenuFrame currentMenu, Set<Class<?>> annotatedClasses, String userInput) {
+        if(currentMenu.getInputRules().isEmpty()) {
+            return true;
+        }
+        return currentMenu.getInputRules().stream()
+                .map(inputRule -> parseRule(inputRule, annotatedClasses))
+                .anyMatch(rule -> rule.checkRule(userInput));
     }
 
     AbstractInputRule parseRule(InputRule inputRule, Set<Class<?>> annotatedClasses) throws RuntimeException {
@@ -148,19 +159,18 @@ public final class GraphBasedMenuWalker extends Observable implements MenuWalker
         throw new RuntimeException("No such rule declared: " + inputRule.getRule());
     }
 
-    void doRun(MenuFrame currentMenu, PropertiesParser propertiesParser) {
+    String askForInput(MenuFrame currentMenu, PropertiesParser propertiesParser) {
         //new FormattedMenuPrinter(new SimpleMenuFormatter(), System.out).print(currentMenu);
         Properties properties = propertiesParser.parseProperties(currentMenu.getProperties());
         if (properties.isInputExpected()) {
-            currentMenu.setUserInput(
-                    inputAsker.ask(
-                            new SimpleMenuFormatter().format(currentMenu)));
+            return inputAsker.ask(new SimpleMenuFormatter().format(currentMenu));
         }
+        return null;
     }
 
     @Override
     public MenuWalker registerAdapter(CommandLineAdapter adapter) {
-        menuGraph.vertexSet().forEach(frame -> frame.addObserver(adapter));
+        adapters.add(adapter);
         return this;
     }
 

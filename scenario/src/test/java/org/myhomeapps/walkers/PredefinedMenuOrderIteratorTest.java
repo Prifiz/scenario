@@ -122,7 +122,6 @@ public class PredefinedMenuOrderIteratorTest {
                 .withText("Second");
         startVertex.addItem(first);
         startVertex.addItem(second);
-        startVertex.setUserInput("Incorrect Input");
         graph.addVertex(startVertex);
         MenuFrame endVertex = new MenuFrame("end");
         graph.addVertex(endVertex);
@@ -130,7 +129,7 @@ public class PredefinedMenuOrderIteratorTest {
         PredefinedMenuOrderIterator<MenuFrame, DefaultEdge> iterator =
                 new PredefinedMenuOrderIterator<>(graph, startVertex);
         iterator.next();
-        Assert.assertEquals(startVertex, iterator.next());
+        Assert.assertEquals(startVertex, iterator.next("Incorrect Input"));
     }
 
     @Test
@@ -146,7 +145,6 @@ public class PredefinedMenuOrderIteratorTest {
                 .withText("Second");
         startVertex.addItem(first);
         startVertex.addItem(second);
-        startVertex.setUserInput("First");
         graph.addVertex(startVertex);
         MenuFrame endVertex = new MenuFrame("end");
         graph.addVertex(endVertex);
@@ -154,7 +152,7 @@ public class PredefinedMenuOrderIteratorTest {
         PredefinedMenuOrderIterator<MenuFrame, DefaultEdge> iterator =
                 new PredefinedMenuOrderIterator<>(graph, startVertex);
         iterator.next();
-        Assert.assertEquals(endVertex, iterator.next());
+        Assert.assertEquals(endVertex, iterator.next("First"));
     }
 
 }

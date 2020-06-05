@@ -25,13 +25,12 @@ menuSystem:
     gotoMenu: "divSecond"
     inputRules:
       - { rule: "@IsNumber", errorMessage: "First value should be a number" }
-    field: "divFirst"
+    bindings: { field: "divFirst" }
 
   # Divide Second Number Input
   - name: "divSecond"
     text: "Enter second value:"
-    field: "divSecond"
-    method: "divide"
+    bindings: { field: "divSecond", method: "divide" }
     gotoMenu: "home"
     inputRules:
       - { rule: "@IsNumber", errorMessage: "First value should be a number" }
@@ -42,13 +41,12 @@ menuSystem:
     gotoMenu: "addSecond"
     inputRules:
       - { rule: "@IsNumber", errorMessage: "First value should be a number" }
-    field: "addFirst"
+    bindings: { field: "addFirst" }
 
  # Add Second Number Input
   - name: "addSecond"
     text: "Enter second value:"
-    field: "addSecond"
-    method: "add"
+    bindings: { field: "addSecond", method: "add" }
     gotoMenu: "home"
     inputRules:
       - { rule: "@IsNumber", errorMessage: "First value should be a number" }

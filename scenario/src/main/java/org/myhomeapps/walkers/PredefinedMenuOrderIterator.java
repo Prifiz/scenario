@@ -13,7 +13,8 @@ import org.myhomeapps.menuentities.input.ItemChooserWithAlternatives;
 import java.util.Optional;
 import java.util.Set;
 
-public class PredefinedMenuOrderIterator<V extends MenuFrame, E> extends AbstractGraphIterator<V, E> {
+public class PredefinedMenuOrderIterator<V extends MenuFrame, E>
+        extends AbstractGraphIterator<V, E> implements InputBasedIterator<V, E> {
 
     @Getter
     private V currentVertex;
@@ -47,6 +48,11 @@ public class PredefinedMenuOrderIterator<V extends MenuFrame, E> extends Abstrac
 
     @Override
     public V next() {
+        return next("");
+    }
+
+    @Override
+    public V next(String userInput) {
         if (!startVertexVisited) {
             startVertexVisited = true;
             return currentVertex;
@@ -64,14 +70,15 @@ public class PredefinedMenuOrderIterator<V extends MenuFrame, E> extends Abstrac
 //        }
 
         if (currentVertex.hasItems()) {
-            return nextByChosenItem(outgoingEdges);
+            return nextByChosenItem(outgoingEdges, userInput);
         } else {
             return currentVertex = Graphs.getOppositeVertex(graph, outgoingEdges.iterator().next(), currentVertex);
         }
     }
 
-    V nextByChosenItem(Set<? extends E> currentVertexOutgoingEdges) {
-        Optional<MenuItem> possiblyChosenItem = Optional.ofNullable(itemChooser.chooseItem(currentVertex));
+    V nextByChosenItem(Set<? extends E> currentVertexOutgoingEdges, String userInput) {
+        Optional<MenuItem> possiblyChosenItem = Optional.ofNullable(
+                itemChooser.chooseItem(currentVertex.getItems(), userInput));
         if(possiblyChosenItem.isEmpty()) {
             return currentVertex;// repeat prompt of user input
         }

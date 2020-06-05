@@ -2,49 +2,43 @@ package org.myhomeapps.menuentities.input;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.menuentities.MenuItem;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class ItemChooserWithAlternativesTest {
 
     @Test
     public void chooseItemExpectedInputTest() {
-        MenuFrame menuFrame = new MenuFrame();
         MenuItem expected = new MenuItem().withText("First");
-        menuFrame.addItem(expected);
-        menuFrame.addItem(new MenuItem().withText("Second"));
+        MenuItem second = new MenuItem().withText("Second");
+        List<MenuItem> items = Arrays.asList(expected, second);
         ItemChooser itemChooser = new ItemChooserWithAlternatives();
-        menuFrame.setUserInput("first");
-        Assert.assertEquals(expected, itemChooser.chooseItem(menuFrame));
-        menuFrame.setUserInput("First");
-        Assert.assertEquals(expected, itemChooser.chooseItem(menuFrame));
+        Assert.assertEquals(expected, itemChooser.chooseItem(items, "first"));
+        Assert.assertEquals(expected, itemChooser.chooseItem(items, "First"));
     }
 
     @Test
     public void chooseItemAlternativeInputTest() {
-        MenuFrame menuFrame = new MenuFrame();
         MenuItem expected = new MenuItem()
                 .withText("First")
                 .addInputAlternative("One");
-        menuFrame.addItem(expected);
-        menuFrame.addItem(new MenuItem().withText("Second"));
+        MenuItem second = new MenuItem().withText("Second");
+        List<MenuItem> items = Arrays.asList(expected, second);
         ItemChooser itemChooser = new ItemChooserWithAlternatives();
-        menuFrame.setUserInput("One");
-        Assert.assertEquals(expected, itemChooser.chooseItem(menuFrame));
-        menuFrame.setUserInput("one");
-        Assert.assertEquals(expected, itemChooser.chooseItem(menuFrame));
+        Assert.assertEquals(expected, itemChooser.chooseItem(items, "One"));
+        Assert.assertEquals(expected, itemChooser.chooseItem(items, "one"));
     }
 
     @Test
     public void chooseItemIncorrectInputTest() {
-        MenuFrame menuFrame = new MenuFrame();
         MenuItem expected = new MenuItem()
                 .withText("First")
                 .addInputAlternative("One");
-        menuFrame.addItem(expected);
-        menuFrame.addItem(new MenuItem().withText("Second"));
+        MenuItem second = new MenuItem().withText("Second");
+        List<MenuItem> items = Arrays.asList(expected, second);
         ItemChooser itemChooser = new ItemChooserWithAlternatives();
-        menuFrame.setUserInput("NonMatchingInput");
-        Assert.assertNull(itemChooser.chooseItem(menuFrame));
+        Assert.assertNull(itemChooser.chooseItem(items, "NonMatchingInput"));
     }
 }

@@ -1,8 +1,9 @@
 package org.myhomeapps.menuentities.input;
 
-import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.menuentities.MenuItem;
 
+import java.util.Collection;
+
 public interface ItemChooser {
-    MenuItem chooseItem(MenuFrame frame);
+    MenuItem chooseItem(Collection<MenuItem> items, String userInput);
 }

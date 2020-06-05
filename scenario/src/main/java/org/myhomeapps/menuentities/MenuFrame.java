@@ -7,34 +7,45 @@ import org.myhomeapps.menuentities.input.InputRule;
 import org.myhomeapps.menuentities.properties.DefaultPropertiesParser;
 import org.myhomeapps.walkers.graphbuilders.GotoLevel;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public class MenuFrame extends Observable {
+public class MenuFrame {
 
-    private int id;
+    //private int id;
     private String name = "";
     private String text = "";
     private String gotoMenu = ""; // always only one!!!
-    private String userInput = "";
-    private String method = "";
-    private String field = "";
+    //private String userInput = "";
+    private Bindings bindings = new Bindings();
+//    private String method = "";
+//    private String field = "";
     private List<String> properties = new ArrayList<>();
     private List<MenuItem> items = new ArrayList<>();
     private List<InputRule> inputRules = new ArrayList<>();
 
+    //private List<PropertyChangeListener> changes = new ArrayList<>();
 
-    public MenuFrame(int id, String name, String text, String gotoMenu) {
-        this.id = id;
+    public MenuFrame(String name, String text, String gotoMenu) {
+        super();
+        //this.id = id;
         this.name = name;
         this.text = text;
         this.items = new ArrayList<>();
-        this.userInput = "";
+        //this.userInput = "";
         this.gotoMenu = gotoMenu;
     }
+
+//    private void notifyListeners(Object object, String property, String oldValue, String newValue) {
+//        for (PropertyChangeListener name : changes) {
+//            name.propertyChange(new PropertyChangeEvent(this, property, oldValue, newValue));
+//        }
+//    }
 
     public MenuFrame() {
     }
@@ -44,10 +55,10 @@ public class MenuFrame extends Observable {
         this.name = name;
     }
 
-    public MenuFrame bindMethod(String bindMethod) {
-        this.method = bindMethod;
-        return this;
-    }
+//    public MenuFrame bindMethod(String bindMethod) {
+//        this.method = bindMethod;
+//        return this;
+//    }
 
     public MenuFrame gotoMenuWithName(String gotoMenuName) {
         this.gotoMenu = gotoMenuName;
@@ -58,11 +69,20 @@ public class MenuFrame extends Observable {
         this.items.add(menuItem);
     }
 
-    public void setUserInput(String userInput) {
-        this.userInput = userInput;
-        setChanged();
-        notifyObservers();
-    }
+//    public void addListener(PropertyChangeListener listener) {
+//        this.changes.add(listener);
+//    }
+
+//    public void removeListener(PropertyChangeListener listener) {
+//        this.changes.remove(listener);
+//    }
+
+//    public void setUserInput(String userInput) {
+//        notifyListeners(this,
+//                "userInput",
+//                        this.userInput,
+//                this.userInput = userInput);
+//    }
 
     public boolean hasItems() {
         return !(items == null || items.isEmpty());

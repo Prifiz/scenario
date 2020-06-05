@@ -1,17 +1,18 @@
 package org.myhomeapps.menuentities.input;
 
-import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.menuentities.MenuItem;
+
+import java.util.Collection;
 
 public class ItemChooserWithAlternatives implements ItemChooser {
     @Override
-    public MenuItem chooseItem(MenuFrame frame) {
-        for (MenuItem item : frame.getItems()) {
-            if (item.getText().equalsIgnoreCase(frame.getUserInput())) {
+    public MenuItem chooseItem(Collection<MenuItem> items, String userInput) {
+        for (MenuItem item : items) {
+            if (item.getText().equalsIgnoreCase(userInput)) {
                 return item;
             }
             if (item.getInputAlternatives().stream()
-                    .anyMatch(altInput -> altInput.equalsIgnoreCase(frame.getUserInput()))) {
+                    .anyMatch(altInput -> altInput.equalsIgnoreCase(userInput))) {
                 return item;
             }
         }
