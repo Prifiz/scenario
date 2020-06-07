@@ -1,7 +1,6 @@
 package org.myhomeapps.walkers.validators;
 
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Tested;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -14,9 +13,9 @@ import org.myhomeapps.menuentities.properties.DefaultPropertiesParser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public class DeadEndsValidatorTest {
+
 
     @Tested
     MenuFrame start;
