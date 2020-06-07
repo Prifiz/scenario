@@ -106,7 +106,7 @@ public final class GraphBasedMenuWalker implements MenuWalker {
     }
 
     @Override
-    public void run() {
+    public void run() throws IOException {
         PropertiesParser propertiesParser = new DefaultPropertiesParser();
         MenuFrame homeFrame = findHomeFrame(propertiesParser);
 
@@ -121,12 +121,14 @@ public final class GraphBasedMenuWalker implements MenuWalker {
             do {
                 userInput = askForInput(currentMenu, propertiesParser);
             } while (userInput != null && !isInputCorrect(currentMenu, annotatedClasses, userInput));
-            bindAdapters(currentMenu.getBindings(), userInput);
+            bindAdapters(currentMenu.getBindings(), userInput); // FIXME get return values from adapters
         }
     }
 
-    void bindAdapters(Bindings bindings, String userInput) {
-        adapters.forEach(commandLineAdapter -> commandLineAdapter.bind(bindings, userInput));
+    void bindAdapters(Bindings bindings, String userInput) throws IOException {
+        for(CommandLineAdapter commandLineAdapter : adapters) {
+            commandLineAdapter.bind(bindings, userInput);
+        }
     }
 
     boolean isInputCorrect(MenuFrame currentMenu, Set<Class<?>> annotatedClasses, String userInput) {
@@ -160,7 +162,6 @@ public final class GraphBasedMenuWalker implements MenuWalker {
     }
 
     String askForInput(MenuFrame currentMenu, PropertiesParser propertiesParser) {
-        //new FormattedMenuPrinter(new SimpleMenuFormatter(), System.out).print(currentMenu);
         Properties properties = propertiesParser.parseProperties(currentMenu.getProperties());
         if (properties.isInputExpected()) {
             return inputAsker.ask(new SimpleMenuFormatter().format(currentMenu));
