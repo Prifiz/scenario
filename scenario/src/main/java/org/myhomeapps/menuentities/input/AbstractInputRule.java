@@ -1,28 +1,42 @@
 package org.myhomeapps.menuentities.input;
 
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class AbstractInputRule extends InputRule {
+public abstract class AbstractInputRule {
 
     private static final Logger logger = LogManager.getLogger(AbstractInputRule.class);
 
-    public AbstractInputRule(String rule, String errorMessage) {
-        super(rule, errorMessage);
-    }
+//    @Getter
+//    protected final String ruleAlias;
+    @Getter
+    protected final String customErrorMessage;
 
-    public AbstractInputRule() {
-    }
+//    public AbstractInputRule(String ruleAlias, String errorMessage) {
+//        this.ruleAlias = ruleAlias;
+//        this.errorMessage = errorMessage;
+//    }
 
-    public AbstractInputRule(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public abstract String getErrorMessage();
+
+//    public AbstractInputRule() {
+//    }
+//
+    public AbstractInputRule(String customErrorMessage) {
+        this.customErrorMessage = customErrorMessage;
     }
 
     public boolean checkRule(String input) {
         if(isPassed(input)) {
             return true;
         } else {
-            logger.error(getErrorMessage());
+            if(StringUtils.isBlank(customErrorMessage)) {
+                logger.error(this::getCustomErrorMessage);
+            } else {
+                logger.error(this::getErrorMessage);
+            }
             return false;
         }
     }

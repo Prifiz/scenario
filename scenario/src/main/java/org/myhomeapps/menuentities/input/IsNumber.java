@@ -10,12 +10,13 @@ public class IsNumber extends AbstractInputRule {
 
     protected static final String INCORRECT_INPUT_MSG = "Couldn't parse input";
 
-    public IsNumber() {
-        super("@IsNumber", "Not a number");
+    public IsNumber(String customErrorMessage) {
+        super(customErrorMessage);
     }
 
-    public IsNumber(String errorMessage) {
-        super("@IsNumber", errorMessage);
+    @Override
+    public String getErrorMessage() {
+        return "Not a number";
     }
 
     @Override

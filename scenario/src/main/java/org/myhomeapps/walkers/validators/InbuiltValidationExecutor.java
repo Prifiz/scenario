@@ -1,0 +1,46 @@
+package org.myhomeapps.walkers.validators;
+
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.myhomeapps.menuentities.MenuFrame;
+import org.myhomeapps.menuentities.properties.DefaultPropertiesParser;
+import org.myhomeapps.menuentities.properties.PropertiesParser;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class InbuiltValidationExecutor implements ValidationExecutor {
+
+    private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
+
+    public InbuiltValidationExecutor(DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph) {
+        this.menuGraph = menuGraph;
+    }
+
+    @Override
+    public List<? extends GraphIssue> validate() {
+        List<AbstractValidator<MenuFrame, DefaultEdge>> validators =
+                prepareInbuiltValidators(new DefaultPropertiesParser(), menuGraph);
+        return doValidateGraph(validators);
+    }
+
+    private List<AbstractValidator<MenuFrame, DefaultEdge>> prepareInbuiltValidators(
+            PropertiesParser propertiesParser, DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph) {
+        List<AbstractValidator<MenuFrame, DefaultEdge>> validators = new ArrayList<>();
+        validators.add(new DeadEndsValidator<>(menuGraph, propertiesParser));
+        validators.add(new MultipleHomeFramesValidator<>(menuGraph, propertiesParser));
+        validators.add(new EndlessCyclesValidator<>(menuGraph, propertiesParser));
+        validators.add(new FramesWithoutTextValidator<>(menuGraph));
+        validators.add(new MenuItemsWithoutTextValidator<>(menuGraph));
+        validators.add(new DuplicatedFramesValidator<>(menuGraph));
+        return validators;
+    }
+
+    private List<? extends GraphIssue> doValidateGraph(List<AbstractValidator<MenuFrame, DefaultEdge>> validators) {
+        return validators.stream()
+                .filter(validator -> !validator.validate().getOccurrences().isEmpty())
+                .map(AbstractValidator::validate)
+                .collect(Collectors.toList());
+    }
+}
