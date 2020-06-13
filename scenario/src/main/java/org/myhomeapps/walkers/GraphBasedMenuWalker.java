@@ -6,9 +6,9 @@ import org.myhomeapps.adapters.CommandLineAdapter;
 import org.myhomeapps.formatters.SimpleMenuFormatter;
 import org.myhomeapps.menuentities.Bindings;
 import org.myhomeapps.menuentities.MenuFrame;
+import org.myhomeapps.menuentities.input.AbstractInputChecker;
+import org.myhomeapps.menuentities.input.AbstractInputRule;
 import org.myhomeapps.menuentities.input.DefaultInputChecker;
-import org.myhomeapps.menuentities.input.InputChecker;
-import org.myhomeapps.menuentities.input.RuleClassFinder;
 import org.myhomeapps.menuentities.properties.DefaultPropertiesParser;
 import org.myhomeapps.menuentities.properties.Properties;
 import org.myhomeapps.menuentities.properties.PropertiesParser;
@@ -24,11 +24,17 @@ public final class GraphBasedMenuWalker implements MenuWalker {
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
     private final InputAsker inputAsker;
     private final Set<CommandLineAdapter> adapters = new HashSet<>();
+    private final AbstractInputChecker inputChecker = new DefaultInputChecker();
     private boolean inBuiltGraphValidationNeeded = true;
 
     GraphBasedMenuWalker(DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph) {
         this.menuGraph = menuGraph;
         this.inputAsker = new InputAsker(System.in, System.out);
+    }
+
+    public GraphBasedMenuWalker withCustomInputProcessors(AbstractInputRule... processors) {
+        this.inputChecker.initCustomRules(processors);
+        return this;
     }
 //    public GraphBasedMenuWalker withCustomIO(InputStream in, PrintStream out) {
 //        this.inputAsker = new InputAsker(in, out);
@@ -68,14 +74,14 @@ public final class GraphBasedMenuWalker implements MenuWalker {
 
         PredefinedMenuOrderIterator<MenuFrame, DefaultEdge> graphIterator =
                 new PredefinedMenuOrderIterator<>(menuGraph, homeFrame);
-        InputChecker inputChecker = new DefaultInputChecker(new RuleClassFinder());
 
         String userInput = "";
         while (graphIterator.hasNext()) {
             MenuFrame currentMenu = graphIterator.next(userInput);
             do {
                 userInput = askForInput(currentMenu, propertiesParser);
-            } while (userInput != null && !inputChecker.isInputCorrect(currentMenu.getInputRules(), userInput));
+            } while (userInput != null && !inputChecker.isInputCorrect(
+                    currentMenu.getInputRules(), userInput));
             bindAdapters(currentMenu.getBindings(), userInput); // FIXME get return values from adapters
         }
     }
@@ -100,7 +106,4 @@ public final class GraphBasedMenuWalker implements MenuWalker {
         }
         return null;
     }
-
-    // TODO custom input control
-
 }

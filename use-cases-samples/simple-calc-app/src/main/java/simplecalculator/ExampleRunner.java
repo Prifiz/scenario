@@ -13,6 +13,7 @@ public class ExampleRunner {
         MenuWalkerInitiator.initMenu(inputStream)
                 .registerAdapter(new AdditionAdapter())
                 .registerAdapter(new DivisionAdapter())
+                // TODO register custom input rule
                 .run();
     }
 }

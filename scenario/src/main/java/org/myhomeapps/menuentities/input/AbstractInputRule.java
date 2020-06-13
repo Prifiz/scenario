@@ -5,6 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Objects;
+
 public abstract class AbstractInputRule {
 
     private static final Logger logger = LogManager.getLogger(AbstractInputRule.class);
@@ -12,7 +14,7 @@ public abstract class AbstractInputRule {
 //    @Getter
 //    protected final String ruleAlias;
     @Getter
-    protected final String customErrorMessage;
+    protected String customErrorMessage;
 
 //    public AbstractInputRule(String ruleAlias, String errorMessage) {
 //        this.ruleAlias = ruleAlias;
@@ -21,8 +23,9 @@ public abstract class AbstractInputRule {
 
     public abstract String getErrorMessage();
 
-//    public AbstractInputRule() {
-//    }
+    public AbstractInputRule() {
+        this.customErrorMessage = "";
+    }
 //
     public AbstractInputRule(String customErrorMessage) {
         this.customErrorMessage = customErrorMessage;
@@ -42,4 +45,17 @@ public abstract class AbstractInputRule {
     }
 
     public abstract boolean isPassed(String input);
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractInputRule rule = (AbstractInputRule) o;
+        return Objects.equals(customErrorMessage, rule.customErrorMessage);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(customErrorMessage);
+    }
 }

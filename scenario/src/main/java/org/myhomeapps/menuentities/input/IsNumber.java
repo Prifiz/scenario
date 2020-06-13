@@ -3,7 +3,6 @@ package org.myhomeapps.menuentities.input;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@InputCheckingRule
 public class IsNumber extends AbstractInputRule {
 
     Logger logger = LogManager.getLogger(IsNumber.class);
@@ -12,6 +11,10 @@ public class IsNumber extends AbstractInputRule {
 
     public IsNumber(String customErrorMessage) {
         super(customErrorMessage);
+    }
+
+    public IsNumber() {
+        super();
     }
 
     @Override
