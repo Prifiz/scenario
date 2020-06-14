@@ -30,7 +30,7 @@ menuSystem:
   # Divide Second Number Input
   - name: "divSecond"
     text: "Enter second value:"
-    bindings: { field: "divSecond", method: "divide" }
+    bindings: { field: "divSecond", runAdapter: "DivisionAdapter" }
     gotoMenu: "home"
     inputRules:
       - { rule: "IsNumber", errorMessage: "First value should be a number" }
@@ -47,7 +47,7 @@ menuSystem:
  # Add Second Number Input
   - name: "addSecond"
     text: "Enter second value:"
-    bindings: { field: "addSecond", method: "add" }
+    bindings: { field: "addSecond", runAdapter: "AdditionAdapter" }
     gotoMenu: "home"
     inputRules:
       - { rule: "IsNumber", errorMessage: "First value should be a number" }

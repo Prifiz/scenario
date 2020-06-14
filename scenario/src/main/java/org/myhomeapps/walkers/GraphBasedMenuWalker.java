@@ -2,9 +2,10 @@ package org.myhomeapps.walkers;
 
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.myhomeapps.adapters.AdapterBinder;
+import org.myhomeapps.adapters.AdapterBinderImpl;
 import org.myhomeapps.adapters.CommandLineAdapter;
 import org.myhomeapps.formatters.SimpleMenuFormatter;
-import org.myhomeapps.menuentities.Bindings;
 import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.menuentities.input.AbstractInputChecker;
 import org.myhomeapps.menuentities.input.AbstractInputRule;
@@ -15,15 +16,13 @@ import org.myhomeapps.menuentities.properties.PropertiesParser;
 import org.myhomeapps.walkers.validators.*;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public final class GraphBasedMenuWalker implements MenuWalker {
 
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
     private final InputAsker inputAsker;
-    private final Set<CommandLineAdapter> adapters = new HashSet<>();
+    private final AdapterBinder adapterBinder = new AdapterBinderImpl();
     private final AbstractInputChecker inputChecker = new DefaultInputChecker();
     private boolean inBuiltGraphValidationNeeded = true;
 
@@ -55,7 +54,7 @@ public final class GraphBasedMenuWalker implements MenuWalker {
 
     @Override
     public MenuWalker registerAdapter(CommandLineAdapter adapter) {
-        adapters.add(adapter);
+        adapterBinder.register(adapter);
         return this;
     }
 
@@ -82,7 +81,9 @@ public final class GraphBasedMenuWalker implements MenuWalker {
                 userInput = askForInput(currentMenu, propertiesParser);
             } while (userInput != null && !inputChecker.isInputCorrect(
                     currentMenu.getInputRules(), userInput));
-            bindAdapters(currentMenu.getBindings(), userInput); // FIXME get return values from adapters
+            if (adapterBinder.bind(currentMenu.getBindings(), userInput)) {
+                System.out.println(adapterBinder.getRunAdapterOutput());
+            }
         }
     }
 
@@ -91,12 +92,6 @@ public final class GraphBasedMenuWalker implements MenuWalker {
                 .filter(frame -> propertiesParser.parseProperties(frame.getProperties()).containsHome())
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("Couldn't find home frame"));
-    }
-
-    private void bindAdapters(Bindings bindings, String userInput) throws IOException {
-        for(CommandLineAdapter commandLineAdapter : adapters) {
-            commandLineAdapter.bind(bindings, userInput);
-        }
     }
 
     private String askForInput(MenuFrame currentMenu, PropertiesParser propertiesParser) {

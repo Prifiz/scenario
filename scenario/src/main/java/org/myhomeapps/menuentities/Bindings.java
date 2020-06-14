@@ -8,15 +8,23 @@ import lombok.Setter;
 public class Bindings {
 
     private String field;
-    private String method;
+    private String runAdapter;
 
-    public Bindings(String field, String method) {
+    public Bindings(String field, String runAdapter) {
         this.field = field;
-        this.method = method;
+        this.runAdapter = runAdapter;
     }
 
     public Bindings() {
         this.field = "";
-        this.method = "";
+        this.runAdapter = "";
+    }
+
+    @Override
+    public String toString() {
+        return "Bindings{" +
+                "field='" + field + '\'' +
+                ", runAdapter='" + runAdapter + '\'' +
+                '}';
     }
 }
