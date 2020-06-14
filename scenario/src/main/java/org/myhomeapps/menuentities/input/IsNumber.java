@@ -23,6 +23,11 @@ public class IsNumber extends AbstractInputRule {
     }
 
     @Override
+    public String getRuleDefName() {
+        return "IsNumber";
+    }
+
+    @Override
     public boolean isPassed(String input) {
         try {
             Integer.parseInt(input);

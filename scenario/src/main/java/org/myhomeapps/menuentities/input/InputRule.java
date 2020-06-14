@@ -1,5 +1,6 @@
 package org.myhomeapps.menuentities.input;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
