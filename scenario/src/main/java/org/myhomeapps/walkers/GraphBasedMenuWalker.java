@@ -1,5 +1,7 @@
 package org.myhomeapps.walkers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.myhomeapps.adapters.AdapterBinder;
@@ -19,6 +21,8 @@ import java.io.IOException;
 import java.util.List;
 
 public final class GraphBasedMenuWalker implements MenuWalker {
+
+    Logger logger = LogManager.getLogger(getClass());
 
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
     private final InputAsker inputAsker;

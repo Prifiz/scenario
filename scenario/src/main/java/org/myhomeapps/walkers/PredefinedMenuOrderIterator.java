@@ -2,6 +2,8 @@ package org.myhomeapps.walkers;
 
 import lombok.Getter;
 import lombok.NonNull;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.traverse.AbstractGraphIterator;
@@ -15,6 +17,8 @@ import java.util.Set;
 
 public class PredefinedMenuOrderIterator<V extends MenuFrame, E>
         extends AbstractGraphIterator<V, E> implements InputBasedIterator<V, E> {
+
+    Logger logger = LogManager.getLogger(getClass());
 
     @Getter
     private V currentVertex;
@@ -60,7 +64,7 @@ public class PredefinedMenuOrderIterator<V extends MenuFrame, E>
 
         Set<? extends E> outgoingEdges = graph.outgoingEdgesOf(currentVertex);
         if (outgoingEdges.isEmpty()) {
-            System.out.println("End reached");
+            logger.info("End reached");
             return currentVertex;
         }
 // Maybe will be never needed

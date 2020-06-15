@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 public class IsNumber extends AbstractInputRule {
 
-    Logger logger = LogManager.getLogger(IsNumber.class);
+    Logger logger = LogManager.getLogger(getClass());
 
     protected static final String INCORRECT_INPUT_MSG = "Couldn't parse input";
 

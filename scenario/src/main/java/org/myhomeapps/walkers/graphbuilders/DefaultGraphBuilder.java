@@ -1,6 +1,8 @@
 package org.myhomeapps.walkers.graphbuilders;
 
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -11,6 +13,8 @@ import java.io.IOException;
 
 @Getter
 public class DefaultGraphBuilder implements GraphBuilder {
+
+    Logger logger = LogManager.getLogger(getClass());
 
     private final MenuSystem menuSystem;
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
@@ -27,8 +31,8 @@ public class DefaultGraphBuilder implements GraphBuilder {
             try {
                 addEdges(sourceCandidate);
             } catch (IOException ex) {
-                System.out.println("Something went wrong while adding graph edges");
-                System.out.println(ex.getMessage());
+                logger.error("Something went wrong while adding graph edges");
+                logger.error(ex.getMessage());
             }
         });
         return menuGraph;
@@ -46,7 +50,7 @@ public class DefaultGraphBuilder implements GraphBuilder {
                 break;
             }
             default: {
-                System.out.println("Something went wrong with goto levels...");
+                logger.warn("Something went wrong with goto levels...");
             }
         }
     }

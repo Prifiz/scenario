@@ -1,0 +1,20 @@
+Configuration:
+  status: warn
+  name: loggingConfig
+  properties:
+    property:
+      name: filename
+      value: target/menuLog.txt
+  thresholdFilter:
+    level: info
+  appenders:
+    Console:
+      name: STDOUT
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "[%-5level] %msg%n"
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        - ref: STDOUT

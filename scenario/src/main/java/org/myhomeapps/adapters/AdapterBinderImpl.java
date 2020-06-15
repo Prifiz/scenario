@@ -2,6 +2,8 @@ package org.myhomeapps.adapters;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.myhomeapps.menuentities.Bindings;
 
 import java.io.IOException;
@@ -12,6 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AdapterBinderImpl implements AdapterBinder {
+
+    Logger logger = LogManager.getLogger(getClass());
 
     @Getter
     private final Set<CommandLineAdapter> adapters = new HashSet<>();
@@ -29,7 +33,7 @@ public class AdapterBinderImpl implements AdapterBinder {
     @Override
     public boolean bind(Bindings bindings, String userInput) {
         if(adapters.isEmpty()) {
-            System.out.println("No adapters registered for bindings: " + bindings.toString());
+            logger.error("No adapters registered for bindings: {}", bindings::toString);
             return false;
         }
         try {
@@ -37,7 +41,7 @@ public class AdapterBinderImpl implements AdapterBinder {
             this.runAdapterOutput = executeRunAdapter(bindings.getRunAdapter());
             return true;
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());// todo logging
+            logger.error(ex.getMessage());// todo logging
             return false;
         }
     }
@@ -97,6 +101,5 @@ public class AdapterBinderImpl implements AdapterBinder {
             }
         }
         return "";
-        //throw new Exception("No adapters found to call method in for name: " + runAdapter);
     }
 }

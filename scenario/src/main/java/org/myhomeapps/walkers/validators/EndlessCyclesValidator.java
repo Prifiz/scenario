@@ -1,5 +1,7 @@
 package org.myhomeapps.walkers.validators;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector;
@@ -15,6 +17,8 @@ import java.util.stream.Stream;
 
 public class EndlessCyclesValidator<V extends MenuFrame, E extends DefaultEdge>
         extends PropertiesBasedGraphValidator<V, E> {
+
+    Logger logger = LogManager.getLogger(getClass());
 
     public EndlessCyclesValidator(Graph<V, E> graph, PropertiesParser propertiesParser) {
         super(propertiesParser, graph);
@@ -53,7 +57,7 @@ public class EndlessCyclesValidator<V extends MenuFrame, E extends DefaultEdge>
             List<GraphPath<V, E>> routines =
                     paths.getAllPaths(frame, exitFrame, true, null);
             if(routines.isEmpty()) {
-                System.out.println("No path to exit from frame: " + frame.getName());
+                logger.info("No path to exit from frame: " + frame.getName());
                 result.add(frame);
             }
         });
@@ -69,7 +73,7 @@ public class EndlessCyclesValidator<V extends MenuFrame, E extends DefaultEdge>
             List<GraphPath<V, E>> pathsToExit =
                     paths.getAllPaths(frame, exitFrame, true, null);
             if(pathsToExit.isEmpty()) {
-                System.out.println("No path to exit from cycle frame: " + frame.getName());
+                logger.info("No path to exit from cycle frame: " + frame.getName());
                 result.add(frame);
             }
         }));
