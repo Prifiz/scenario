@@ -6,11 +6,15 @@ import org.myhomeapps.menuentities.MenuFrame;
 import org.myhomeapps.menuentities.MenuItem;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Validator to find menus containing items with the same names.
+ * Prevents the case when some goto points to 2 or more menu items at the same time.
+ */
 public class DuplicatedItemsValidator<V extends MenuFrame, E extends DefaultEdge> extends AbstractValidator<V, E> {
+    // fixme should the goto be checked too??
 
     public DuplicatedItemsValidator(Graph<V, E> graph) {
         super(graph);
@@ -25,8 +29,12 @@ public class DuplicatedItemsValidator<V extends MenuFrame, E extends DefaultEdge
         return result;
     }
 
+    /**
+     * Finds names of menus with duplicated {@link MenuItem} inside.
+     * @return {@link List} of menu names.
+     */
     @Override
-    protected Collection<String> findOccurrences() {
+    protected List<String> findOccurrences() {
         return findDuplicatedItems(graph);
     }
 

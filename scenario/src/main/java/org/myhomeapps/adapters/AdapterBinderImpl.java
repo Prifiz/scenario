@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AdapterBinderImpl implements AdapterBinder {
+public final class AdapterBinderImpl implements AdapterBinder {
 
     Logger logger = LogManager.getLogger(getClass());
 

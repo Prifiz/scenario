@@ -8,18 +8,32 @@ import org.jgrapht.alg.connectivity.KosarajuStrongConnectivityInspector;
 import org.jgrapht.alg.interfaces.StrongConnectivityAlgorithm;
 import org.jgrapht.alg.shortestpath.AllDirectedPaths;
 import org.jgrapht.graph.DefaultEdge;
-import org.myhomeapps.menuentities.properties.PropertiesParser;
 import org.myhomeapps.menuentities.MenuFrame;
+import org.myhomeapps.menuentities.properties.PropertiesParser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Searches for cycles with no exits in menu graph.
+ * If cycle contains exit menu it is not included to the result,
+ * because exit menu allows to exit the cycle.
+ */
 public class EndlessCyclesValidator<V extends MenuFrame, E extends DefaultEdge>
         extends PropertiesBasedGraphValidator<V, E> {
 
     Logger logger = LogManager.getLogger(getClass());
 
+    /**
+     * Creates new {@link EndlessCyclesValidator} object.
+     * @param propertiesParser {@link PropertiesParser} object which should parse {@link String} properties
+     *                                                 to special objects
+     * @param graph menu states graph represented by {@link Graph} object to validate.
+     */
     public EndlessCyclesValidator(Graph<V, E> graph, PropertiesParser propertiesParser) {
         super(propertiesParser, graph);
     }
@@ -80,15 +94,17 @@ public class EndlessCyclesValidator<V extends MenuFrame, E extends DefaultEdge>
         return result;
     }
 
+    /**
+     * Gets the list of menu names included to endless cycles.
+     * @return the {@link List} of menu names included to endless cycles.
+     */
     @Override
-    protected Collection<String> findOccurrences() {
+    protected List<String> findOccurrences() {
         V exitFrame = findExitFrame(graph);
         List<V> simplyLockedFrames = findFramesWithoutSimplePathsToExit(graph, exitFrame);
         List<V> lockedFramesInCycles = findCyclesFramesWithoutPathToExit(graph, exitFrame);
 
-        Set<V> lockedFrames = Stream.concat(
-                simplyLockedFrames.stream(),
-                lockedFramesInCycles.stream())
+        Set<V> lockedFrames = Stream.concat(simplyLockedFrames.stream(), lockedFramesInCycles.stream())
                 .collect(Collectors.toSet());
 
         return lockedFrames.stream()

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AdjacencyMatrix {
+class AdjacencyMatrix {
 
     private int[][] adjacencyMatrix;
 
-    public AdjacencyMatrix(int[][] adjacencyMatrix) {
+    AdjacencyMatrix(int[][] adjacencyMatrix) {
         this.adjacencyMatrix = adjacencyMatrix;
     }
 

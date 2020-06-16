@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
-public class AdjacencyMatrixBuilder<V extends MenuFrame, E extends DefaultEdge> {
+class AdjacencyMatrixBuilder<V extends MenuFrame, E extends DefaultEdge> {
 
-    public AdjacencyMatrix buildAdjacencyMatrix(Graph<V, E> graph) {
+    AdjacencyMatrix buildAdjacencyMatrix(Graph<V, E> graph) {
         List<V> vertices = new ArrayList<>(graph.vertexSet());
         int dimension = vertices.size();
         int[][] result = new int[dimension][dimension];
