@@ -1,6 +1,6 @@
 package simplecalculator;
 
-import org.myhomeapps.adapters.CommandLineAdapter;
+import org.prifizapps.adapters.CommandLineAdapter;
 
 public class DivisionAdapter implements CommandLineAdapter {
 

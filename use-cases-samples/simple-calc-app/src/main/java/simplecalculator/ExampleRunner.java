@@ -1,7 +1,7 @@
 package simplecalculator;
 
-import org.myhomeapps.menuentities.input.AbstractInputRule;
-import org.myhomeapps.walkers.MenuWalkerInitiator;
+import org.prifizapps.menuentities.input.AbstractInputRule;
+import org.prifizapps.walkers.MenuWalkerInitiator;
 
 import java.io.IOException;
 import java.io.InputStream;
