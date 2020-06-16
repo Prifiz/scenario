@@ -1,5 +1,6 @@
 package org.myhomeapps.walkers;
 
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -24,6 +25,7 @@ public final class GraphBasedMenuWalker implements MenuWalker {
 
     Logger logger = LogManager.getLogger(getClass());
 
+    @Getter
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
     private final InputAsker inputAsker;
     private final AdapterBinder adapterBinder = new AdapterBinderImpl();
@@ -64,14 +66,7 @@ public final class GraphBasedMenuWalker implements MenuWalker {
 
     @Override
     public void run() throws IOException {
-        if(inBuiltGraphValidationNeeded) {
-            ValidationExecutor validationExecutor = new InbuiltValidationExecutor(menuGraph);
-            List<? extends GraphIssue> issues = validationExecutor.validate();
-            if(!issues.isEmpty()) {
-                throw new MenuValidationException(new GraphIssuesReportBuilder(issues).buildValidationReport());
-            }
-        }
-
+        validate();
         PropertiesParser propertiesParser = new DefaultPropertiesParser();
         MenuFrame homeFrame = findHomeFrame(propertiesParser);
 
@@ -87,6 +82,16 @@ public final class GraphBasedMenuWalker implements MenuWalker {
                     currentMenu.getInputRules(), userInput));
             if (adapterBinder.bind(currentMenu.getBindings(), userInput)) {
                 System.out.println(adapterBinder.getRunAdapterOutput());
+            }
+        }
+    }
+
+    private void validate() throws MenuValidationException {
+        if(inBuiltGraphValidationNeeded) {
+            ValidationExecutor validationExecutor = new InbuiltValidationExecutor(menuGraph);
+            List<? extends GraphIssue> issues = validationExecutor.validate();
+            if(!issues.isEmpty()) {
+                throw new MenuValidationException(new GraphIssuesReportBuilder(issues).buildValidationReport());
             }
         }
     }

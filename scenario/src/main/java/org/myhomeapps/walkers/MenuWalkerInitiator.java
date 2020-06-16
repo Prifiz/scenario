@@ -9,6 +9,9 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 
+/**
+ * Singleton object for menu system initialization.
+ */
 public class MenuWalkerInitiator {
 
     private static final MenuWalkerInitiator instance = new MenuWalkerInitiator();
@@ -16,11 +19,22 @@ public class MenuWalkerInitiator {
     private MenuWalkerInitiator() {
     }
 
+    /**
+     * Initializes {@link MenuWalker} from configuration provided as an {@link InputStream}.
+     * This can be helpful if the configuration file is stored as project resource.
+     * @param menuConfigInputStream {@link InputStream} reading the menu configuration file.
+     * @return {@link MenuWalker} object which can be used to configure and run CLI menu.
+     */
     public static MenuWalker initMenu(InputStream menuConfigInputStream) {
         DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph = buildGraph(menuConfigInputStream);
         return new GraphBasedMenuWalker(menuGraph);
     }
 
+    /**
+     * Initializes {@link MenuWalker} from configuration provided as file with the specified path.
+     * @param yamlConfig path to configuration file.
+     * @return {@link MenuWalker} object which can be used to configure and run CLI menu.
+     */
     public static MenuWalker initMenu(String yamlConfig) {
         DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph = buildGraph(yamlConfig);
         return new GraphBasedMenuWalker(menuGraph);

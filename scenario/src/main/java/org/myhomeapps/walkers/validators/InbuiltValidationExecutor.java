@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Runs the menu graph validation by predefined set of {@link AbstractValidator} subclasses.
+ */
 public class InbuiltValidationExecutor implements ValidationExecutor {
 
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
@@ -18,6 +21,11 @@ public class InbuiltValidationExecutor implements ValidationExecutor {
         this.menuGraph = menuGraph;
     }
 
+    /**
+     * Runs the validation process.
+     * @return {@link List} of {@link GraphIssue} objects if some of validators discover any violations
+     * or empty {@link List} otherwise.
+     */
     @Override
     public List<? extends GraphIssue> validate() {
         List<AbstractValidator<MenuFrame, DefaultEdge>> validators =
