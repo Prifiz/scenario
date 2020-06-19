@@ -2,6 +2,5 @@ language: java
 
 jdk:
   - oraclejdk13
-  
-before_script: cd scenario
+
 script: "mvn clean install"
