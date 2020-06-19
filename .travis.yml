@@ -3,4 +3,4 @@ language: java
 jdk:
   - oraclejdk13
 
-script: "mvn clean deploy"
+script: "mvn clean install"
