@@ -2,17 +2,18 @@ package org.prifizapps.menuentities.input;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
+import java.io.PrintStream;
 import java.util.Objects;
 
 public abstract class AbstractInputRule {
 
-    private static final Logger logger = LogManager.getLogger(AbstractInputRule.class);
+//    private static final Logger logger = LogManager.getLogger(AbstractInputRule.class);
 
     @Getter
+    @Setter
     protected String customErrorMessage;
 
     public abstract String getErrorMessage();
@@ -26,14 +27,14 @@ public abstract class AbstractInputRule {
         this.customErrorMessage = customErrorMessage;
     }
 
-    public boolean checkRule(@NonNull String input) {
+    public boolean checkRule(@NonNull String input, @NonNull PrintStream printStream) {
         if(isPassed(input)) {
             return true;
         } else {
             if(StringUtils.isBlank(customErrorMessage)) {
-                logger.error(this::getErrorMessage);
+                printStream.println(getErrorMessage());
             } else {
-                logger.error(this::getCustomErrorMessage);
+                printStream.println(getCustomErrorMessage());
             }
             return false;
         }

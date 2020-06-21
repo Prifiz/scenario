@@ -1,5 +1,7 @@
 package org.prifizapps.menuentities.input;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -18,9 +20,12 @@ public class RuleProcessorContainerImpl implements RuleProcessorContainer {
     }
 
     @Override
-    public AbstractInputRule find(InputRule declaredRule) {
+    public AbstractInputRule find(InputRule declaredRule) { // TODO unit testing!
         for(AbstractInputRule rule : ruleProcessors) {
             if(rule.getRuleDefName().equals(declaredRule.getRule())) {
+                if(StringUtils.isNotBlank(declaredRule.getErrorMessage())) {
+                    rule.setCustomErrorMessage(declaredRule.getErrorMessage());
+                }
                 return rule;
             }
         }

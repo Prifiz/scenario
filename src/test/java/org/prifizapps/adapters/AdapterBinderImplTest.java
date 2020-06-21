@@ -86,7 +86,7 @@ public class AdapterBinderImplTest {
     }
 
     @Test
-    public void bindFieldFailTest() {
+    public void bindFieldNoBoundAdaptersTest() {
         final String defaultFieldValue = "default";
         class FieldBindFailAdapter implements CommandLineAdapter {
             @Getter

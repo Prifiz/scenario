@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
 
 import static org.prifizapps.menuentities.input.AbstractInputChecker.INCORRECT_RULE_MSG;
@@ -34,6 +35,10 @@ public class AbstractInputCheckerTest {
     };
 
     private class TestInputChecker extends AbstractInputChecker {
+        public TestInputChecker(PrintStream printStream) {
+            super(printStream);
+        }
+
         @Override
         protected Set<AbstractInputRule> initDefaultRules() {
             Set<AbstractInputRule> defaultRules = new HashSet<>();
@@ -44,7 +49,7 @@ public class AbstractInputCheckerTest {
 
     @Test
     public void defaultRulesTest() {
-        TestInputChecker testInputChecker = new TestInputChecker();
+        TestInputChecker testInputChecker = new TestInputChecker(System.out);
         Set<AbstractInputRule> expectedDefaultRules = new HashSet<>();
         expectedDefaultRules.add(defaultRule);
         RuleProcessorContainer defaultRuleContainer = new RuleProcessorContainerImpl(expectedDefaultRules);
@@ -69,7 +74,7 @@ public class AbstractInputCheckerTest {
                 return false;
             }
         };
-        TestInputChecker testInputChecker = new TestInputChecker();
+        TestInputChecker testInputChecker = new TestInputChecker(System.out);
         testInputChecker.initCustomRules(customRule);
         Set<AbstractInputRule> expectedCustomRules = new HashSet<>();
         expectedCustomRules.add(customRule);
@@ -79,13 +84,13 @@ public class AbstractInputCheckerTest {
 
     @Test
     public void isInputCorrectNoDeclaredRulesTest() throws IOException {
-        TestInputChecker testInputChecker = new TestInputChecker();
+        TestInputChecker testInputChecker = new TestInputChecker(System.out);
         Assert.assertTrue(testInputChecker.isInputCorrect(Collections.emptyList(), "input"));
     }
 
     @Test
     public void incorrectRuleDeclarationTest() throws IOException {
-        AbstractInputChecker testInputChecker = new AbstractInputChecker() {
+        AbstractInputChecker testInputChecker = new AbstractInputChecker(System.out) {
             @Override
             protected Set<AbstractInputRule> initDefaultRules() {
                 return new HashSet<>();
@@ -119,7 +124,7 @@ public class AbstractInputCheckerTest {
                 return false;
             }
         };
-        AbstractInputChecker testInputChecker = new AbstractInputChecker() {
+        AbstractInputChecker testInputChecker = new AbstractInputChecker(System.out) {
             @Override
             protected Set<AbstractInputRule> initDefaultRules() {
                 Set<AbstractInputRule> result = new HashSet<>();
@@ -170,7 +175,7 @@ public class AbstractInputCheckerTest {
                 return false;
             }
         };
-        AbstractInputChecker testInputChecker = new AbstractInputChecker() {
+        AbstractInputChecker testInputChecker = new AbstractInputChecker(System.out) {
             @Override
             protected Set<AbstractInputRule> initDefaultRules() {
                 Set<AbstractInputRule> result = new HashSet<>();
@@ -224,7 +229,7 @@ public class AbstractInputCheckerTest {
                 return true;
             }
         };
-        AbstractInputChecker testInputChecker = new AbstractInputChecker() {
+        AbstractInputChecker testInputChecker = new AbstractInputChecker(System.out) {
             @Override
             protected Set<AbstractInputRule> initDefaultRules() {
                 Set<AbstractInputRule> result = new HashSet<>();

@@ -37,11 +37,16 @@ public final class AdapterBinderImpl implements AdapterBinder {
             return false;
         }
         try {
-            bindField(bindings.getField(), userInput);
+            String field = bindings.getField();
+            boolean anyAdapterBound = bindField(field, userInput);
             this.runAdapterOutput = executeRunAdapter(bindings.getRunAdapter());
+            if(StringUtils.isNotBlank(field) && !anyAdapterBound) {
+                logger.error("No adapters found for field binding: [{}]", field);
+                return false;
+            }
             return true;
         } catch (Exception ex) {
-            logger.error(ex.getMessage());// todo logging
+            logger.error(ex.getMessage());
             return false;
         }
     }
@@ -51,13 +56,17 @@ public final class AdapterBinderImpl implements AdapterBinder {
         return runAdapterOutput;
     }
 
-    private void bindField(String bindField, String userInput) throws Exception {
+    private boolean bindField(String bindField, String userInput) throws Exception {
+        boolean result = false;
         for (CommandLineAdapter commandLineAdapter : adapters) {
-            updateBindFields(commandLineAdapter, bindField, userInput);
+            if(updateBindFields(commandLineAdapter, bindField, userInput)) {
+                result = true;
+            }
         }
+        return result;
     }
 
-    private void updateBindFields(CommandLineAdapter adapter, String bindField, String userInput) throws Exception {
+    private boolean updateBindFields(CommandLineAdapter adapter, String bindField, String userInput) throws Exception {
         Pattern bindFieldOnlyPattern = Pattern.compile("^" + FIELD_NAME_PATTERN + "$");
         Pattern bindFieldOfCertainClassPattern = Pattern.compile(
                 "^(" + CLASS_NAME_PATTERN + ")\\.(" + FIELD_NAME_PATTERN + ")$");
@@ -66,32 +75,29 @@ public final class AdapterBinderImpl implements AdapterBinder {
 
         if (StringUtils.isNotBlank(bindField)) {
             if (bindFieldOnlyPattern.matcher(bindField).matches()) {
-                doBindField(adapter, bindField, userInput);
+                return doBindField(adapter, bindField, userInput);
             } else if (fieldOfClassMatcher.matches()) {
                 String clazzNameToBind = fieldOfClassMatcher.group(1);
                 if (adapter.getClass().getSimpleName().equals(clazzNameToBind)) {
-                    doBindField(adapter, fieldOfClassMatcher.group(2), userInput);
+                    return doBindField(adapter, fieldOfClassMatcher.group(2), userInput);
                 }
             } else {
                 throw new IOException(INCORRECT_FIELD_MSG + bindField);
             }
         }
+        return false;
     }
 
-    private void doBindField(CommandLineAdapter adapter, String bindField, String userInput)
-            throws Exception {
-        int boundFields = 0;
+    private boolean doBindField(CommandLineAdapter adapter, String bindField, String userInput) throws Exception {
+        boolean result = false;
         for (Field field : adapter.getClass().getDeclaredFields()) {
             if (bindField.equals(field.getName())) {
                 field.setAccessible(true);
                 field.set(adapter, userInput);
-                boundFields++;
+                result = true;
             }
         }
-        if(boundFields == 0) {
-            throw new IOException(String.format("No fields found to bind for name [%s] in adapter [%s]",
-                    bindField, adapter.getClass().getSimpleName()));
-        }
+        return result;
     }
 
     private String executeRunAdapter(String runAdapter) throws Exception {

@@ -10,7 +10,7 @@ public class DefaultInputCheckerTest {
 
     @Test
     public void initDefaultRulesTest() {
-        AbstractInputChecker inputChecker = new DefaultInputChecker();
+        AbstractInputChecker inputChecker = new DefaultInputChecker(System.out);
         AbstractInputRule isNumber = new IsNumber();
         List<AbstractInputRule> expected = Collections.singletonList(isNumber);
         Assert.assertArrayEquals(expected.toArray(), inputChecker.initDefaultRules().toArray());

@@ -1,8 +1,6 @@
 package org.prifizapps.walkers;
 
 import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.prifizapps.adapters.AdapterBinder;
@@ -23,13 +21,11 @@ import java.util.List;
 
 public final class GraphBasedMenuWalker implements MenuWalker {
 
-    Logger logger = LogManager.getLogger(getClass());
-
     @Getter
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
     private final InputAsker inputAsker;
     private final AdapterBinder adapterBinder = new AdapterBinderImpl();
-    private final AbstractInputChecker inputChecker = new DefaultInputChecker();
+    private final AbstractInputChecker inputChecker = new DefaultInputChecker(System.out);
     private boolean inBuiltGraphValidationNeeded = true;
 
     GraphBasedMenuWalker(DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph) {

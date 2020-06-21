@@ -4,16 +4,21 @@ import lombok.Getter;
 import lombok.NonNull;
 
 import java.io.IOException;
-import java.util.*;
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
 
 @Getter
 public abstract class AbstractInputChecker {
 
+    protected final PrintStream printStream;
     protected final RuleProcessorContainer defaultRules;
     protected RuleProcessorContainer customRules = new RuleProcessorContainerImpl();
     static final String INCORRECT_RULE_MSG = "No rule class found for rule declaration: ";
 
-    public AbstractInputChecker() {
+    public AbstractInputChecker(PrintStream printStream) {
+        this.printStream = printStream;
         this.defaultRules = new RuleProcessorContainerImpl(initDefaultRules());
     }
 
@@ -38,11 +43,11 @@ public abstract class AbstractInputChecker {
                 throw new IOException(INCORRECT_RULE_MSG + declaredRule.getRule());
             }
 
-            if (defaultRuleProcessor != null && !defaultRuleProcessor.checkRule(userInput)) {
+            if (defaultRuleProcessor != null && !defaultRuleProcessor.checkRule(userInput, printStream)) {
                 return false;
             }
 
-            if (customRuleProcessor != null && !customRuleProcessor.checkRule(userInput)) {
+            if (customRuleProcessor != null && !customRuleProcessor.checkRule(userInput, printStream)) {
                 return false;
             }
         }
