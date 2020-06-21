@@ -15,7 +15,7 @@ public class InputAsker {
     }
 
     public void printAskMessage(String message) {
-        out.println(message);
+        out.print(message);
     }
 
     public String ask(String message) {

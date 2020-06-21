@@ -1,6 +1,7 @@
 package org.prifizapps.walkers;
 
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.prifizapps.adapters.AdapterBinder;
@@ -16,21 +17,24 @@ import org.prifizapps.menuentities.properties.PropertiesParser;
 import org.prifizapps.walkers.validators.*;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 
 public final class GraphBasedMenuWalker implements MenuWalker {
 
     @Getter
     private final DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph;
+
+    private final PrintStream menuPrintStream = System.out;
     private final InputAsker inputAsker;
     private final AdapterBinder adapterBinder = new AdapterBinderImpl();
-    private final AbstractInputChecker inputChecker = new DefaultInputChecker(System.out);
+    private final AbstractInputChecker inputChecker = new DefaultInputChecker(menuPrintStream);
     private boolean inBuiltGraphValidationNeeded = true;
     private final PropertiesParser propertiesParser;
 
     GraphBasedMenuWalker(DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph, PropertiesParser propertiesParser) {
         this.menuGraph = menuGraph;
-        this.inputAsker = new InputAsker(System.in, System.out);
+        this.inputAsker = new InputAsker(System.in, menuPrintStream);
         this.propertiesParser = propertiesParser;
     }
 
@@ -72,13 +76,17 @@ public final class GraphBasedMenuWalker implements MenuWalker {
 
         String userInput = "";
         while (graphIterator.hasNext()) {
+            menuPrintStream.println();
             MenuFrame currentMenu = graphIterator.next(userInput);
             do {
                 userInput = askForInput(currentMenu, propertiesParser);
             } while (userInput != null && !inputChecker.isInputCorrect(
                     currentMenu.getInputRules(), userInput));
             if (adapterBinder.bind(currentMenu.getBindings(), userInput)) {
-                System.out.println(adapterBinder.getRunAdapterOutput());
+                String adapterOutput = adapterBinder.getRunAdapterOutput();
+                if(StringUtils.isNotBlank(adapterOutput)) {
+                    menuPrintStream.print(adapterOutput);
+                }
             }
         }
     }
@@ -102,8 +110,11 @@ public final class GraphBasedMenuWalker implements MenuWalker {
 
     private String askForInput(MenuFrame currentMenu, PropertiesParser propertiesParser) {
         Properties properties = propertiesParser.parseProperties(currentMenu.getProperties());
+        final String displayedText = new SimpleMenuFormatter().format(currentMenu);
         if (properties.isInputExpected()) {
-            return inputAsker.ask(new SimpleMenuFormatter().format(currentMenu));
+            return inputAsker.ask(displayedText);
+        } else {
+            menuPrintStream.print(displayedText);
         }
         return null;
     }

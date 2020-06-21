@@ -21,7 +21,7 @@ public class SimpleMenuFormatter implements MenuFormatter {
             }
             stringBuffer.append("\n");
         });
-        return stringBuffer.toString();
+        return stringBuffer.toString().replaceAll("\n\n", "\n");
     }
 
     private String buildAlternatives(MenuItem menuItem) {
