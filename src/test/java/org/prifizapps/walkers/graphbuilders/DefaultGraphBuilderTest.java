@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.prifizapps.menuentities.MenuFrame;
 import org.prifizapps.menuentities.MenuItem;
 import org.prifizapps.menuentities.MenuSystem;
+import org.prifizapps.menuentities.properties.DefaultPropertiesParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +23,7 @@ public class DefaultGraphBuilderTest {
         MenuFrame end = new MenuFrame("end");
         MenuSystem menuSystem = new MenuSystem(new ArrayList<>(Arrays.asList(start, end)));
         GraphBuilder graphBuilder = new DefaultGraphBuilder(menuSystem);
-        Graph<MenuFrame, DefaultEdge> graph = graphBuilder.buildFramesGraph();
+        Graph<MenuFrame, DefaultEdge> graph = graphBuilder.buildFramesGraph(new DefaultPropertiesParser());
         Assert.assertTrue(graph.vertexSet().contains(start));
         Assert.assertTrue(graph.vertexSet().contains(end));
         Assert.assertEquals(Collections.singletonList(end), Graphs.successorListOf(graph, start));
@@ -42,7 +43,7 @@ public class DefaultGraphBuilderTest {
         MenuFrame end = new MenuFrame("end");
         MenuSystem menuSystem = new MenuSystem(new ArrayList<>(Arrays.asList(start, end)));
         GraphBuilder graphBuilder = new DefaultGraphBuilder(menuSystem);
-        Graph<MenuFrame, DefaultEdge> graph = graphBuilder.buildFramesGraph();
+        Graph<MenuFrame, DefaultEdge> graph = graphBuilder.buildFramesGraph(new DefaultPropertiesParser());
         Assert.assertTrue(graph.vertexSet().contains(start));
         Assert.assertTrue(graph.vertexSet().contains(end));
         Assert.assertEquals(Collections.singletonList(end), Graphs.successorListOf(graph, start));
@@ -64,7 +65,7 @@ public class DefaultGraphBuilderTest {
         MenuFrame end = new MenuFrame("end");
         MenuSystem menuSystem = new MenuSystem(new ArrayList<>(Arrays.asList(start, mid, end)));
         GraphBuilder graphBuilder = new DefaultGraphBuilder(menuSystem);
-        Graph<MenuFrame, DefaultEdge> graph = graphBuilder.buildFramesGraph();
+        Graph<MenuFrame, DefaultEdge> graph = graphBuilder.buildFramesGraph(new DefaultPropertiesParser());
         Assert.assertTrue(graph.vertexSet().contains(start));
         Assert.assertTrue(graph.vertexSet().contains(mid));
         Assert.assertTrue(graph.vertexSet().contains(end));

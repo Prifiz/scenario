@@ -8,6 +8,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.prifizapps.menuentities.MenuFrame;
 import org.prifizapps.menuentities.MenuSystem;
+import org.prifizapps.menuentities.properties.PropertiesParser;
 
 import java.io.IOException;
 
@@ -24,15 +25,14 @@ public class DefaultGraphBuilder implements GraphBuilder {
         this.menuGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
     }
 
-    public Graph<MenuFrame, DefaultEdge> buildFramesGraph() {
+    public Graph<MenuFrame, DefaultEdge> buildFramesGraph(PropertiesParser propertiesParser) {
         menuSystem.getMenuSystem().forEach(menuGraph::addVertex);
 
         menuGraph.vertexSet().forEach(sourceCandidate -> {
             try {
                 addEdges(sourceCandidate);
             } catch (IOException ex) {
-                logger.error("Something went wrong while adding graph edges");
-                logger.error(ex.getMessage());
+                logger.warn(ex.getMessage());
             }
         });
         return menuGraph;

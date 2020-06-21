@@ -4,6 +4,8 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.prifizapps.menuentities.MenuFrame;
 import org.prifizapps.menuentities.MenuSystem;
+import org.prifizapps.menuentities.properties.DefaultPropertiesParser;
+import org.prifizapps.menuentities.properties.PropertiesParser;
 import org.prifizapps.walkers.graphbuilders.DefaultGraphBuilder;
 import org.yaml.snakeyaml.Yaml;
 
@@ -16,6 +18,8 @@ public class MenuWalkerInitiator {
 
     private static final MenuWalkerInitiator instance = new MenuWalkerInitiator();
 
+    private static PropertiesParser propertiesParser = new DefaultPropertiesParser();
+
     private MenuWalkerInitiator() {
     }
 
@@ -27,7 +31,7 @@ public class MenuWalkerInitiator {
      */
     public static MenuWalker initMenu(InputStream menuConfigInputStream) {
         DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph = buildGraph(menuConfigInputStream);
-        return new GraphBasedMenuWalker(menuGraph);
+        return new GraphBasedMenuWalker(menuGraph, propertiesParser);
     }
 
     /**
@@ -37,16 +41,18 @@ public class MenuWalkerInitiator {
      */
     public static MenuWalker initMenu(String yamlConfig) {
         DefaultDirectedGraph<MenuFrame, DefaultEdge> menuGraph = buildGraph(yamlConfig);
-        return new GraphBasedMenuWalker(menuGraph);
+        return new GraphBasedMenuWalker(menuGraph, propertiesParser);
     }
 
     static DefaultDirectedGraph<MenuFrame, DefaultEdge> buildGraph(InputStream menuConfigInputStream) {
         MenuSystem menuSystem = new Yaml().loadAs(menuConfigInputStream, MenuSystem.class);
-        return (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder(menuSystem).buildFramesGraph();
+        return (DefaultDirectedGraph<MenuFrame, DefaultEdge>)
+                new DefaultGraphBuilder(menuSystem).buildFramesGraph(propertiesParser);
     }
 
     static DefaultDirectedGraph<MenuFrame, DefaultEdge> buildGraph(String configContent) {
         MenuSystem menuSystem = new Yaml().loadAs(configContent, MenuSystem.class);
-        return (DefaultDirectedGraph<MenuFrame, DefaultEdge>) new DefaultGraphBuilder(menuSystem).buildFramesGraph();
+        return (DefaultDirectedGraph<MenuFrame, DefaultEdge>)
+                new DefaultGraphBuilder(menuSystem).buildFramesGraph(propertiesParser);
     }
 }
