@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.prifiz</groupId>
     <artifactId>scenario</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>scenario</name>
     <description>Simple java CLI menu creation engine</description>
     <url>https://github.com/Prifiz/scenario</url>
@@ -48,7 +46,7 @@
         <connection>scm:git:git://github.com/Prifiz/scenario.git</connection>
         <developerConnection>scm:git:git@github.com:Prifiz/scenario.git</developerConnection>
         <url>https://github.com/Prifiz/scenario</url>
-        <tag>HEAD</tag>
+        <tag>scenario-1.0.0</tag>
     </scm>
 
     <build>
