@@ -8,20 +8,25 @@ import java.util.List;
 import java.util.Optional;
 
 public class SimpleMenuFormatter implements MenuFormatter {
+
+    private static final String EOL = "\n";
+    private static final String INDENT = "\t";
+
     public String format(MenuFrame frame) {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(frame.getText());
-        stringBuffer.append("\n");
-        List<MenuItem> items = frame.getItems();
-        List<MenuItem> optItems = Optional.ofNullable(items).orElse(new ArrayList<>());
-        optItems.forEach(item -> {
-            stringBuffer.append("\t" + item.getText());
+        stringBuffer.append(EOL);
+        List<MenuItem> items = Optional.ofNullable(frame.getItems())
+                .orElse(new ArrayList<>());
+        items.forEach(item -> {
+            stringBuffer.append(INDENT);
+            stringBuffer.append(item.getText());
             if(!item.getInputAlternatives().isEmpty()) {
                 stringBuffer.append(buildAlternatives(item));
             }
-            stringBuffer.append("\n");
+            stringBuffer.append(EOL);
         });
-        return stringBuffer.toString().replaceAll("\n\n", "\n");
+        return stringBuffer.toString().replaceAll(EOL + EOL, EOL);
     }
 
     private String buildAlternatives(MenuItem menuItem) {
