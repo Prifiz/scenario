@@ -4,7 +4,7 @@
 
     <groupId>com.github.prifiz</groupId>
     <artifactId>scenario</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>scenario</name>
     <description>Simple java CLI menu creation engine</description>
     <url>https://github.com/Prifiz/scenario</url>
@@ -46,7 +46,7 @@
         <connection>scm:git:git://github.com/Prifiz/scenario.git</connection>
         <developerConnection>scm:git:git@github.com:Prifiz/scenario.git</developerConnection>
         <url>https://github.com/Prifiz/scenario</url>
-        <tag>scenario-1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
